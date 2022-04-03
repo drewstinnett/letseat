@@ -22,28 +22,83 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"io/ioutil"
+	"fmt"
+	"sort"
+	"time"
 
-	"github.com/drewstinnett/letseat/pkg/letseat"
+	letseat "github.com/drewstinnett/letseat/pkg"
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v2"
 )
 
 // analyzeCmd represents the analyze command
 var analyzeCmd = &cobra.Command{
-	Use:   "analyze",
-	Short: "Analyze the diary",
+	Use:     "analyze",
+	Short:   "Analyze the diary",
+	Aliases: []string{"a"},
 	Run: func(cmd *cobra.Command, args []string) {
 		diaryF, err := cmd.Flags().GetString("diary")
 		CheckErr(err, "")
 
-		y, err := ioutil.ReadFile(diaryF)
+		onlyTakeout, err := cmd.Flags().GetBool("only-takeout")
+		CheckErr(err, "")
+		onlyDinein, err := cmd.Flags().GetBool("only-dinein")
 		CheckErr(err, "")
 
-		d := letseat.Diary{}
-
-		err = yaml.Unmarshal(y, &d)
+		// Earliest
+		earliestA, err := cmd.Flags().GetString("earliest")
 		CheckErr(err, "")
+		earliestD, err := letseat.ParseDuration(earliestA)
+		CheckErr(err, "")
+		earliest := time.Now().Add(-earliestD)
+
+		diary, err := letseat.LoadDiaryWithFile(diaryF, &letseat.DiaryFilter{
+			OnlyDineIn:  onlyDinein,
+			OnlyTakeout: onlyTakeout,
+			Earliest:    &earliest,
+		})
+		CheckErr(err, "")
+
+		fmt.Printf("Most Popular: %v\n", diary.MostPopularPlace())
+
+		// Find best rated meals
+		places := diary.UniquePlaces()
+		type kv struct {
+			Key       string
+			Rating    float64
+			LastVisit *time.Time
+		}
+		var kvs []kv
+		for _, place := range places {
+			d, err := diary.PlaceDetails(place)
+			CheckErr(err, "")
+			kvs = append(kvs, kv{Key: place, Rating: d.AverageRating, LastVisit: d.LastVisit})
+			// fmt.Printf("%20v %10.1f\n", place, d.AverageRating)
+		}
+
+		// Print highest rated
+		fmt.Println("Highest Rated")
+		sort.Slice(kvs, func(i, j int) bool {
+			return kvs[i].Rating > kvs[j].Rating
+		})
+		for _, i := range kvs {
+			fmt.Printf("%20v %10.1f\n", i.Key, i.Rating)
+		}
+
+		// Print least recent
+		fmt.Println("Last Visited")
+		sort.Slice(kvs, func(i, j int) bool {
+			return kvs[i].LastVisit.Before(*kvs[j].LastVisit)
+		})
+		for _, i := range kvs {
+			last := time.Now().Sub(*i.LastVisit)
+			fmt.Printf("%20v %10v days ago\n", i.Key, int(last.Hours()/24))
+		}
+
+		people := diary.PeopleEnhanced()
+		fmt.Println("Favorite 3 per person")
+		for _, person := range people {
+			fmt.Printf("%20v %20v\n", person.Name, person.FavoriteN(3))
+		}
 	},
 }
 
@@ -59,4 +114,7 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// analyzeCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	analyzeCmd.Flags().Bool("only-takeout", false, "Only include takeout meals")
+	analyzeCmd.Flags().Bool("only-dinein", false, "Only include dine-in meals")
+	analyzeCmd.Flags().StringP("earliest", "e", "90d", "Earliest date to include")
 }
