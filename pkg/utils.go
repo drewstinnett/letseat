@@ -2,6 +2,7 @@ package letseat
 
 import (
 	"errors"
+	"strings"
 	"time"
 )
 
@@ -189,6 +190,9 @@ func leadingFraction(s string) (x int64, scale float64, rem string) {
 	return x, scale, s[i:]
 }
 
+// ContainsString checks a slice for a string
+//
+// Deprecated: Use slices.Contains or whatever the fuck instead
 func ContainsString(list []string, s string) bool {
 	for _, v := range list {
 		if v == s {
@@ -196,4 +200,17 @@ func ContainsString(list []string, s string) bool {
 		}
 	}
 	return false
+}
+
+func GetStars(num float64, star string) string {
+	// Double it up since we can't do half of an emoji
+	if star == "" {
+		star = "⭐️"
+	}
+	rnum := int(num * 2)
+	stars := strings.Builder{}
+	for i := 0; i < rnum; i++ {
+		stars.WriteString(star)
+	}
+	return stars.String()
 }

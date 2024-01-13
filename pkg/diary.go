@@ -1,29 +1,55 @@
+/*
+Package letseat is the main thing that decides where to go for dindin
+*/
 package letseat
 
 import (
-	"io/ioutil"
+	"os"
 	"sort"
 	"time"
 
+	"github.com/montanaflynn/stats"
+	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
 )
 
-type Diary []DiaryEntry
+// Diary is the thing holding all of your visits and info
+type Diary struct {
+	Entries Entries
+}
 
-type DiaryEntry struct {
+// Entries is multiple DiaryEntry objects
+type Entries []Entry
+
+// Entry represents a log about your visit to a restaurant
+type Entry struct {
 	Place     string         `yaml:"place"`
+	Cost      int            `yaml:"cost"`
 	Date      *time.Time     `yaml:"date"`
 	IsTakeout bool           `yaml:"takeout"`
 	Ratings   map[string]int `yaml:"ratings"`
 }
 
-func (d *DiaryEntry) AverageRating() float64 {
-	var total float64
-	for _, rating := range d.Ratings {
-		total += float64(rating)
+func (d *Entry) ratingValuesAsFloat64() []float64 {
+	ret := make([]float64, len(d.Ratings))
+	idx := 0
+	for _, v := range d.Ratings {
+		ret[idx] = float64(v)
+		idx++
 	}
+	return ret
+}
 
-	return total / float64(len(d.Ratings))
+func (d *Entry) averageRating() float64 {
+	r := d.ratingValuesAsFloat64()
+	if len(r) == 0 {
+		return 0
+	}
+	m, err := stats.Mean(r)
+	if err != nil {
+		panic(err)
+	}
+	return m
 }
 
 type DiaryFilter struct {
@@ -34,14 +60,34 @@ type DiaryFilter struct {
 	Latest      *time.Time
 }
 
-type PlaceDetail struct {
-	Name          string
-	AverageRating float64
-	LastVisit     *time.Time
-	Visits        int
+func NewDiaryFilterWithCmd(cmd *cobra.Command) (*DiaryFilter, error) {
+	onlyTakeout, err := cmd.Flags().GetBool("only-takeout")
+	if err != nil {
+		return nil, err
+	}
+	onlyDinein, err := cmd.Flags().GetBool("only-dinein")
+	if err != nil {
+		return nil, err
+	}
+
+	// Earliest
+	earliestA, err := cmd.Flags().GetString("earliest")
+	if err != nil {
+		return nil, err
+	}
+	earliestD, err := ParseDuration(earliestA)
+	if err != nil {
+		return nil, err
+	}
+	earliest := time.Now().Add(-earliestD)
+	return &DiaryFilter{
+		OnlyTakeout: onlyTakeout,
+		OnlyDineIn:  onlyDinein,
+		Earliest:    &earliest,
+	}, nil
 }
 
-func (d *Diary) People() []string {
+func (d *Entries) People() []string {
 	people := []string{}
 	for _, entry := range *d {
 		for person := range entry.Ratings {
@@ -55,7 +101,7 @@ func (d *Diary) People() []string {
 	return people
 }
 
-func (d *Diary) PeopleEnhanced() []Person {
+func (d *Entries) PeopleEnhanced() []Person {
 	people := []Person{}
 	for _, name := range d.People() {
 		ratings := map[string][]int{}
@@ -83,7 +129,7 @@ func (d *Diary) PeopleEnhanced() []Person {
 	return people
 }
 
-func (d *Diary) Places() []string {
+func (d *Entries) Places() []string {
 	places := []string{}
 	for _, entry := range *d {
 		places = append(places, entry.Place)
@@ -92,7 +138,7 @@ func (d *Diary) Places() []string {
 	return places
 }
 
-func (d *Diary) UniquePlaces() []string {
+func (d *Entries) UniquePlaces() []string {
 	places := []string{}
 	for _, entry := range *d {
 		if !ContainsString(places, entry.Place) {
@@ -103,7 +149,7 @@ func (d *Diary) UniquePlaces() []string {
 	return places
 }
 
-func (d *Diary) PlaceDetails(place string) (*PlaceDetail, error) {
+func (d *Entries) PlaceDetails(place string) (*PlaceDetail, error) {
 	e, err := d.Filter(&DiaryFilter{Place: place})
 	if err != nil {
 		return nil, err
@@ -122,26 +168,26 @@ func (d *Diary) PlaceDetails(place string) (*PlaceDetail, error) {
 	return dets, nil
 }
 
-func (d *Diary) MostPopularPlace() string {
+func (d *Entries) MostPopularPlace() string {
 	places := d.Places()
 	return mostFrequent(places)
 }
 
-func (d *Diary) AverageRating() float64 {
+func (d *Entries) AverageRating() float64 {
 	var total float64
 	for _, entry := range *d {
-		total += entry.AverageRating()
+		total += entry.averageRating()
 	}
 
 	return total / float64(len(*d))
 }
 
-func (d *Diary) Filter(f *DiaryFilter) (Diary, error) {
+func (d *Entries) Filter(f *DiaryFilter) (Entries, error) {
 	if f == nil {
 		return *d, nil
 	}
 
-	filtered := Diary{}
+	filtered := Entries{}
 	for _, entry := range *d {
 		if f.OnlyTakeout && !entry.IsTakeout {
 			continue
@@ -169,13 +215,13 @@ func (d *Diary) Filter(f *DiaryFilter) (Diary, error) {
 	return filtered, nil
 }
 
-func LoadDiaryWithFile(f string, filter *DiaryFilter) (Diary, error) {
-	y, err := ioutil.ReadFile(f)
+func LoadDiaryWithFile(f string, filter *DiaryFilter) (Entries, error) {
+	y, err := os.ReadFile(f)
 	if err != nil {
 		return nil, err
 	}
 
-	d := Diary{}
+	d := Entries{}
 	err = yaml.Unmarshal(y, &d)
 	if err != nil {
 		return nil, err

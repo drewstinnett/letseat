@@ -8,11 +8,11 @@ import (
 
 func TestEntryAverage(t *testing.T) {
 	ts := []struct {
-		entry DiaryEntry
+		entry Entry
 		want  float64
 	}{
 		{
-			DiaryEntry{
+			Entry{
 				Place: "a",
 				Ratings: map[string]int{
 					"a": 1,
@@ -25,21 +25,21 @@ func TestEntryAverage(t *testing.T) {
 	}
 
 	for _, tt := range ts {
-		got := tt.entry.AverageRating()
+		got := tt.entry.averageRating()
 		require.Equal(t, tt.want, got)
 	}
 }
 
 func TestFilterDiary(t *testing.T) {
 	ts := []struct {
-		diary  Diary
+		diary  Entries
 		filter *DiaryFilter
 		want   int
 	}{
 		{
-			diary: Diary{
-				DiaryEntry{Place: "A", IsTakeout: true},
-				DiaryEntry{Place: "B", IsTakeout: false},
+			diary: Entries{
+				Entry{Place: "A", IsTakeout: true},
+				Entry{Place: "B", IsTakeout: false},
 			},
 			filter: &DiaryFilter{
 				OnlyTakeout: true,
@@ -47,9 +47,9 @@ func TestFilterDiary(t *testing.T) {
 			want: 1,
 		},
 		{
-			diary: Diary{
-				DiaryEntry{Place: "A", IsTakeout: true},
-				DiaryEntry{Place: "B", IsTakeout: false},
+			diary: Entries{
+				Entry{Place: "A", IsTakeout: true},
+				Entry{Place: "B", IsTakeout: false},
 			},
 			filter: &DiaryFilter{
 				OnlyDineIn: true,
@@ -57,9 +57,9 @@ func TestFilterDiary(t *testing.T) {
 			want: 1,
 		},
 		{
-			diary: Diary{
-				DiaryEntry{Place: "A", IsTakeout: true},
-				DiaryEntry{Place: "B", IsTakeout: false},
+			diary: Entries{
+				Entry{Place: "A", IsTakeout: true},
+				Entry{Place: "B", IsTakeout: false},
 			},
 			filter: &DiaryFilter{
 				Place: "A",
@@ -67,9 +67,9 @@ func TestFilterDiary(t *testing.T) {
 			want: 1,
 		},
 		{
-			diary: Diary{
-				DiaryEntry{Place: "A", IsTakeout: true},
-				DiaryEntry{Place: "B", IsTakeout: false},
+			diary: Entries{
+				Entry{Place: "A", IsTakeout: true},
+				Entry{Place: "B", IsTakeout: false},
 			},
 			want: 2,
 		},
@@ -83,29 +83,29 @@ func TestFilterDiary(t *testing.T) {
 
 func TestPopularPlace(t *testing.T) {
 	ts := []struct {
-		diary Diary
+		diary Entries
 		want  string
 		msg   string
 	}{
 		{
-			diary: Diary{
-				DiaryEntry{Place: "B"},
-				DiaryEntry{Place: "A"},
-				DiaryEntry{Place: "C"},
-				DiaryEntry{Place: "A"},
+			diary: Entries{
+				Entry{Place: "B"},
+				Entry{Place: "A"},
+				Entry{Place: "C"},
+				Entry{Place: "A"},
 			},
 			want: "A",
 			msg:  "Short list of entries",
 		},
 		{
-			diary: Diary{
-				DiaryEntry{Place: "A"},
-				DiaryEntry{Place: "B"},
-				DiaryEntry{Place: "C"},
-				DiaryEntry{Place: "A"},
-				DiaryEntry{Place: "A"},
-				DiaryEntry{Place: "B"},
-				DiaryEntry{Place: "C"},
+			diary: Entries{
+				Entry{Place: "A"},
+				Entry{Place: "B"},
+				Entry{Place: "C"},
+				Entry{Place: "A"},
+				Entry{Place: "A"},
+				Entry{Place: "B"},
+				Entry{Place: "C"},
 			},
 			want: "A",
 			msg:  "Longer list of entries",

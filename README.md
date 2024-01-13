@@ -6,9 +6,11 @@ where to go next.
 ## TODO
 
 Add cost analysis entries, like
+
 * Cost per star
 
 Recommend based on:
+
 * Last visit
 * Favorite of topN
 * Rating?

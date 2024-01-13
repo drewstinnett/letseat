@@ -15,7 +15,6 @@ func TestMostFrequent(t *testing.T) {
 	}
 
 	for _, ts := range tt {
-		got := mostFrequent(ts.values)
-		require.Equal(t, ts.want, got)
+		require.Equal(t, ts.want, mostFrequent(ts.values))
 	}
 }

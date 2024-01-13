@@ -15,7 +15,7 @@ func (p *Person) FavoriteN(n int) []string {
 	}
 	var ss []kv
 	for k, v := range p.PlaceAvgRatings {
-		ss = append(ss, kv{k, v})
+		ss = append(ss, kv{Key: k, Value: v})
 	}
 	sort.Slice(ss, func(i, j int) bool {
 		return ss[i].Value > ss[j].Value

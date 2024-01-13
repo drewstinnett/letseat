@@ -1,33 +1,46 @@
 /*
-Copyright © 2022 Drew Stinnett <drew@drewlink.com>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+Package cmd is the cli app
 */
 package cmd
 
 import (
 	"fmt"
 	"sort"
+	"strings"
 	"time"
 
+	"github.com/charmbracelet/lipgloss"
 	letseat "github.com/drewstinnett/letseat/pkg"
 	"github.com/spf13/cobra"
+)
+
+var (
+	subtle    = lipgloss.AdaptiveColor{Light: "#D9DCCF", Dark: "#383838"}
+	highlight = lipgloss.AdaptiveColor{Light: "#874BFD", Dark: "#7D56F4"}
+	// special    = lipgloss.AdaptiveColor{Light: "#43BF6D", Dark: "#73F59F"}
+	titleStyle = lipgloss.NewStyle().Bold(true).Foreground(highlight)
+	docStyle   = lipgloss.NewStyle().Padding(1, 2, 1, 2)
+
+	/*
+		infoStyle = lipgloss.NewStyle().
+				BorderStyle(lipgloss.NormalBorder()).
+				BorderTop(true).
+				BorderForeground(subtle)
+	*/
+
+	listHeader = lipgloss.NewStyle().
+			BorderStyle(lipgloss.NormalBorder()).
+			BorderBottom(true).
+			BorderForeground(subtle).
+			MarginRight(2).
+			Render
+
+	ratingRow  = lipgloss.NewStyle().Width(50)
+	ratingKey  = lipgloss.NewStyle().AlignHorizontal(lipgloss.Right).Width(20).PaddingRight(2)
+	ratingItem = lipgloss.NewStyle().AlignHorizontal(lipgloss.Right).Width(20)
+
+	listItem      = lipgloss.NewStyle().PaddingLeft(2).Render
+	listItemMajor = lipgloss.NewStyle().PaddingLeft(2).Bold(true).Render
 )
 
 // analyzeCmd represents the analyze command
@@ -35,86 +48,106 @@ var analyzeCmd = &cobra.Command{
 	Use:     "analyze",
 	Short:   "Analyze the diary",
 	Aliases: []string{"a"},
-	Run: func(cmd *cobra.Command, args []string) {
-		diaryF, err := cmd.Flags().GetString("diary")
-		CheckErr(err, "")
-
-		onlyTakeout, err := cmd.Flags().GetBool("only-takeout")
-		CheckErr(err, "")
-		onlyDinein, err := cmd.Flags().GetBool("only-dinein")
-		CheckErr(err, "")
-
-		// Earliest
-		earliestA, err := cmd.Flags().GetString("earliest")
-		CheckErr(err, "")
-		earliestD, err := letseat.ParseDuration(earliestA)
-		CheckErr(err, "")
-		earliest := time.Now().Add(-earliestD)
-
-		diary, err := letseat.LoadDiaryWithFile(diaryF, &letseat.DiaryFilter{
-			OnlyDineIn:  onlyDinein,
-			OnlyTakeout: onlyTakeout,
-			Earliest:    &earliest,
-		})
-		CheckErr(err, "")
-
-		fmt.Printf("Most Popular: %v\n", diary.MostPopularPlace())
-
-		// Find best rated meals
-		places := diary.UniquePlaces()
-		type kv struct {
-			Key       string
-			Rating    float64
-			LastVisit *time.Time
-		}
-		var kvs []kv
-		for _, place := range places {
-			d, err := diary.PlaceDetails(place)
-			CheckErr(err, "")
-			kvs = append(kvs, kv{Key: place, Rating: d.AverageRating, LastVisit: d.LastVisit})
-			// fmt.Printf("%20v %10.1f\n", place, d.AverageRating)
-		}
-
-		// Print highest rated
-		fmt.Println("Highest Rated")
-		sort.Slice(kvs, func(i, j int) bool {
-			return kvs[i].Rating > kvs[j].Rating
-		})
-		for _, i := range kvs {
-			fmt.Printf("%20v %10.1f\n", i.Key, i.Rating)
-		}
-
-		// Print least recent
-		fmt.Println("Last Visited")
-		sort.Slice(kvs, func(i, j int) bool {
-			return kvs[i].LastVisit.Before(*kvs[j].LastVisit)
-		})
-		for _, i := range kvs {
-			last := time.Now().Sub(*i.LastVisit)
-			fmt.Printf("%20v %10v days ago\n", i.Key, int(last.Hours()/24))
-		}
-
-		people := diary.PeopleEnhanced()
-		fmt.Println("Favorite 3 per person")
-		for _, person := range people {
-			fmt.Printf("%20v %20v\n", person.Name, person.FavoriteN(3))
-		}
-	},
+	Run:     runAnalyze,
 }
 
 func init() {
 	rootCmd.AddCommand(analyzeCmd)
+	bindFilter(analyzeCmd)
+}
 
-	// Here you will define your flags and configuration settings.
+func bindFilter(cmd *cobra.Command) {
+	cmd.Flags().Bool("only-takeout", false, "Only include takeout meals")
+	cmd.Flags().Bool("only-dinein", false, "Only include dine-in meals")
+	cmd.Flags().StringP("earliest", "e", "90d", "Earliest date to include")
+}
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// analyzeCmd.PersistentFlags().String("foo", "", "A help for foo")
+func runAnalyze(cmd *cobra.Command, args []string) {
+	diaryF, err := cmd.Flags().GetString("diary")
+	checkErr(err)
 
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// analyzeCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	analyzeCmd.Flags().Bool("only-takeout", false, "Only include takeout meals")
-	analyzeCmd.Flags().Bool("only-dinein", false, "Only include dine-in meals")
-	analyzeCmd.Flags().StringP("earliest", "e", "90d", "Earliest date to include")
+	df, err := letseat.NewDiaryFilterWithCmd(cmd)
+	checkErr(err)
+
+	diary, err := letseat.LoadDiaryWithFile(diaryF, df)
+	checkErr(err)
+
+	// Set up styling
+	doc := strings.Builder{}
+	doc.WriteString(titleStyle.Render(fmt.Sprintf("Most Popular: %v\n", diary.MostPopularPlace())))
+
+	// Find best rated meals
+	places := diary.UniquePlaces()
+	type kv struct {
+		Key       string
+		Rating    float64
+		LastVisit *time.Time
+	}
+	kvs := make([]kv, len(places))
+	for idx, place := range places {
+		d, err := diary.PlaceDetails(place)
+		checkErr(err)
+		kvs[idx] = kv{
+			Key:       place,
+			Rating:    d.AverageRating,
+			LastVisit: d.LastVisit,
+		}
+
+	}
+
+	// Print highest rated
+	ratings := []string{listHeader("\nHighest Rated")}
+	sort.Slice(kvs, func(i, j int) bool {
+		return kvs[i].Rating > kvs[j].Rating
+	})
+	for _, i := range kvs {
+		// ratings = append(ratings, listItem(fmt.Sprintf("%20v %10.1f", i.Key, i.Rating)))
+		// ratings = append(ratings, listItem(fmt.Sprintf("%20v %v", i.Key, letseat.GetStars(i.Rating))))
+		stars := letseat.GetStars(i.Rating, "★")
+		row := lipgloss.JoinHorizontal(lipgloss.Top, ratingKey.Render(i.Key), ratingItem.Render(stars))
+		ratings = append(ratings, ratingRow.Render(row))
+	}
+	doc.WriteString(lipgloss.JoinVertical(lipgloss.Left, ratings...))
+
+	// Print least recent
+	lvisited := []string{listHeader("\n\nLast Visited")}
+	sort.Slice(kvs, func(i, j int) bool {
+		return kvs[i].LastVisit.Before(*kvs[j].LastVisit)
+	})
+
+	highlightTop := 3
+	for i, v := range kvs {
+		lastD := int(time.Since(*v.LastVisit).Hours() / 24)
+		var li string
+		if i < highlightTop {
+			li = listItemMajor(fmt.Sprintf("%20v %10v days ago", v.Key, lastD))
+		} else {
+			li = listItem(fmt.Sprintf("%20v %10v days ago", v.Key, lastD))
+		}
+		lvisited = append(lvisited, li)
+	}
+	doc.WriteString(lipgloss.JoinVertical(lipgloss.Left, lvisited...))
+	doc.WriteString("\n\n")
+	people := diary.PeopleEnhanced()
+	lists := []string{}
+	for _, person := range people {
+		topn := person.FavoriteN(3)
+
+		get := min(len(topn), 3)
+		topx := topn[0:get]
+		topxI := []string{
+			listHeader(person.Name),
+		}
+		for _, topxitem := range topx {
+			topxI = append(topxI, listItem(topxitem))
+		}
+		list := lipgloss.JoinVertical(
+			lipgloss.Left,
+			topxI...,
+		)
+		lists = append(lists, list)
+	}
+	doc.WriteString(lipgloss.JoinHorizontal(lipgloss.Top, lists...))
+
+	fmt.Println(docStyle.Render(doc.String()))
 }

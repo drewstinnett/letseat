@@ -8,18 +8,18 @@ import (
 
 func TestPeople(t *testing.T) {
 	ts := []struct {
-		diary Diary
+		diary Entries
 		want  []string
 	}{
 		{
-			diary: Diary{
-				DiaryEntry{
+			diary: Entries{
+				Entry{
 					Place: "A", Ratings: map[string]int{
 						"a": 1,
 						"b": 2,
 					},
 				},
-				DiaryEntry{
+				Entry{
 					Place: "A", Ratings: map[string]int{
 						"c": 1,
 						"d": 2,
@@ -38,30 +38,30 @@ func TestPeople(t *testing.T) {
 
 func TestFavoriteN(t *testing.T) {
 	ts := []struct {
-		diary Diary
+		diary Entries
 		n     int
 		want  []string
 	}{
 		{
-			diary: Diary{
-				DiaryEntry{Place: "yum", Ratings: map[string]int{"a": 5, "b": 4}},
-				DiaryEntry{Place: "yuck", Ratings: map[string]int{"a": 1, "b": 2}},
+			diary: Entries{
+				Entry{Place: "yum", Ratings: map[string]int{"a": 5, "b": 4}},
+				Entry{Place: "yuck", Ratings: map[string]int{"a": 1, "b": 2}},
 			},
 			n:    2,
 			want: []string{"yum", "yuck"},
 		},
 		{
-			diary: Diary{
-				DiaryEntry{Place: "yuck", Ratings: map[string]int{"a": 1, "b": 2}},
-				DiaryEntry{Place: "yum", Ratings: map[string]int{"a": 5, "b": 4}},
+			diary: Entries{
+				Entry{Place: "yuck", Ratings: map[string]int{"a": 1, "b": 2}},
+				Entry{Place: "yum", Ratings: map[string]int{"a": 5, "b": 4}},
 			},
 			n:    2,
 			want: []string{"yum", "yuck"},
 		},
 		{
-			diary: Diary{
-				DiaryEntry{Place: "yuck", Ratings: map[string]int{"a": 1, "b": 2}},
-				DiaryEntry{Place: "yum", Ratings: map[string]int{"a": 5, "b": 4}},
+			diary: Entries{
+				Entry{Place: "yuck", Ratings: map[string]int{"a": 1, "b": 2}},
+				Entry{Place: "yum", Ratings: map[string]int{"a": 5, "b": 4}},
 			},
 			n:    1,
 			want: []string{"yum"},
