@@ -1,5 +1,7 @@
 # Lets Eat
 
+![logo](./images/letseat.png)
+
 Little utility to look at past takeout/dinein ratings, and decide what to do or
 where to go next.
 

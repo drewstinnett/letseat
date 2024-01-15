@@ -21,7 +21,7 @@ THE SOFTWARE.
 */
 package main
 
-import "github.com/drewstinnett/letseat/cli/cmd"
+import "github.com/drewstinnett/letseat/cmd/letseat/cmd"
 
 func main() {
 	cmd.Execute()

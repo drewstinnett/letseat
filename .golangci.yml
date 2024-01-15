@@ -154,7 +154,7 @@ linters-settings:
           - "github.com/mitchellh/go-homedir"
           - "github.com/charmbracelet/lipgloss"
           - "github.com/drewstinnett/letseat/pkg"
-          - "github.com/drewstinnett/letseat/cli/cmd"
+          - "github.com/drewstinnett/letseat/cmd/letseat/cmd"
           - "github.com/drewstinnett/go-output-format/v2/gout"
 
       tests:
