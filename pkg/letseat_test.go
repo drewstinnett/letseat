@@ -7,33 +7,32 @@ import (
 )
 
 func TestNewFoodie(t *testing.T) {
-	got, err := New()
+	got, err := NewFoodie()
 	require.NoError(t, err)
 	require.NotNil(t, got)
 }
 
 func TestAddPlaces(t *testing.T) {
-	f, err := New(WithPlaces(Places{
-		{Name: "foo"},
-	}))
-	require.NoError(t, err)
+	f := MustNewFoodie(WithPlaces(Places{*MustNewPlace(WithName("Foo"))}))
 	require.NotNil(t, f)
+	require.EqualValues(t,
+		Foodie{
+			Places: Places{
+				{Name: "Foo", Slug: "foo"},
+			},
+		},
+		*f,
+	)
 
-	f.AddPlace(Place{
-		Name: "bar",
-	})
+	p := MustNewPlace(WithName("bar"))
+	f.AddPlace(*p)
+
 	require.Equal(
 		t,
 		Foodie{
 			Places: Places{
-				{
-					Name: "Foo",
-					Slug: "foo",
-				},
-				{
-					Name: "bar",
-					Slug: "bar",
-				},
+				{Name: "Foo", Slug: "foo"},
+				{Name: "bar", Slug: "bar"},
 			},
 		},
 		*f,

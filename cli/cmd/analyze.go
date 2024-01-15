@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"sort"
 	"strings"
-	"time"
 
 	"github.com/charmbracelet/lipgloss"
 	letseat "github.com/drewstinnett/letseat/pkg"
@@ -44,16 +43,15 @@ var (
 )
 
 // analyzeCmd represents the analyze command
-var analyzeCmd = &cobra.Command{
-	Use:     "analyze",
-	Short:   "Analyze the diary",
-	Aliases: []string{"a"},
-	Run:     runAnalyze,
-}
-
-func init() {
-	rootCmd.AddCommand(analyzeCmd)
-	bindFilter(analyzeCmd)
+func newAnalyzeCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "analyze",
+		Short:   "Analyze the diary",
+		Aliases: []string{"a"},
+		RunE:    runAnalyze,
+	}
+	bindFilter(cmd)
+	return cmd
 }
 
 func bindFilter(cmd *cobra.Command) {
@@ -62,92 +60,80 @@ func bindFilter(cmd *cobra.Command) {
 	cmd.Flags().StringP("earliest", "e", "90d", "Earliest date to include")
 }
 
-func runAnalyze(cmd *cobra.Command, args []string) {
-	diaryF, err := cmd.Flags().GetString("diary")
-	checkErr(err)
-
-	df, err := letseat.NewDiaryFilterWithCmd(cmd)
-	checkErr(err)
-
-	diary, err := letseat.LoadDiaryWithFile(diaryF, df)
-	checkErr(err)
-
-	// Set up styling
-	doc := strings.Builder{}
-	doc.WriteString(titleStyle.Render(fmt.Sprintf("Most Popular: %v\n", diary.MostPopularPlace())))
+func runAnalyze(cmd *cobra.Command, args []string) error {
+	diary := letseat.New(
+		letseat.WithFilter(*mustNewEntryFilterWithCmd(cmd)),
+		letseat.WithEntriesFile(mustGetCmd[string](*cmd, "diary")),
+	)
 
 	// Find best rated meals
-	places := diary.UniquePlaces()
-	type kv struct {
-		Key       string
-		Rating    float64
-		LastVisit *time.Time
-	}
-	kvs := make([]kv, len(places))
-	for idx, place := range places {
-		d, err := diary.PlaceDetails(place)
-		checkErr(err)
-		kvs[idx] = kv{
-			Key:       place,
-			Rating:    d.AverageRating,
-			LastVisit: d.LastVisit,
-		}
-
-	}
+	placesDetails := diary.PlaceDetails()
 
 	// Print highest rated
+	sort.Sort(placesDetails)
+
 	ratings := []string{listHeader("\nHighest Rated")}
-	sort.Slice(kvs, func(i, j int) bool {
-		return kvs[i].Rating > kvs[j].Rating
-	})
-	for _, i := range kvs {
-		// ratings = append(ratings, listItem(fmt.Sprintf("%20v %10.1f", i.Key, i.Rating)))
-		// ratings = append(ratings, listItem(fmt.Sprintf("%20v %v", i.Key, letseat.GetStars(i.Rating))))
-		stars := letseat.GetStars(i.Rating, "★")
-		row := lipgloss.JoinHorizontal(lipgloss.Top, ratingKey.Render(i.Key), ratingItem.Render(stars))
-		ratings = append(ratings, ratingRow.Render(row))
+	for _, i := range placesDetails {
+		ratings = append(ratings, ratingRow.Render(
+			lipgloss.JoinHorizontal(lipgloss.Top, ratingKey.Render(i.Name), ratingItem.Render(letseat.Stars(i.AverageRating, "★"))),
+		))
 	}
-	doc.WriteString(lipgloss.JoinVertical(lipgloss.Left, ratings...))
+	// Set up styling
+	doc := strings.Builder{}
+	doc.WriteString(lipgloss.JoinVertical(lipgloss.Left,
+		titleStyle.Render(fmt.Sprintf("Most Popular: %v\n", diary.MostPopularPlace())),
+		lipgloss.JoinVertical(lipgloss.Left, ratings...),
+	))
 
 	// Print least recent
-	lvisited := []string{listHeader("\n\nLast Visited")}
-	sort.Slice(kvs, func(i, j int) bool {
-		return kvs[i].LastVisit.Before(*kvs[j].LastVisit)
+	sort.Slice(placesDetails, func(i, j int) bool {
+		return placesDetails[i].LastVisit.Before(*placesDetails[j].LastVisit)
 	})
 
-	highlightTop := 3
-	for i, v := range kvs {
-		lastD := int(time.Since(*v.LastVisit).Hours() / 24)
-		var li string
-		if i < highlightTop {
-			li = listItemMajor(fmt.Sprintf("%20v %10v days ago", v.Key, lastD))
-		} else {
-			li = listItem(fmt.Sprintf("%20v %10v days ago", v.Key, lastD))
-		}
-		lvisited = append(lvisited, li)
-	}
+	lvisited := vistedStrings(placesDetails, *cmd)
 	doc.WriteString(lipgloss.JoinVertical(lipgloss.Left, lvisited...))
 	doc.WriteString("\n\n")
-	people := diary.PeopleEnhanced()
-	lists := []string{}
-	for _, person := range people {
+
+	entries := diary.Entries()
+	lists := topList(entries.PeopleEnhanced())
+	doc.WriteString(lipgloss.JoinHorizontal(lipgloss.Top, lists...))
+
+	fmt.Fprint(cmd.OutOrStdout(), docStyle.Render(doc.String()))
+	return nil
+}
+
+func topList(people []letseat.Person) []string {
+	lists := make([]string, len(people))
+	for idx, person := range people {
 		topn := person.FavoriteN(3)
 
-		get := min(len(topn), 3)
-		topx := topn[0:get]
-		topxI := []string{
-			listHeader(person.Name),
-		}
-		for _, topxitem := range topx {
-			topxI = append(topxI, listItem(topxitem))
+		topx := topn[0:min(len(topn), 3)]
+		topxI := make([]string, len(topx)+1)
+		topxI[0] = listHeader(person.Name)
+		for idx, topxitem := range topx {
+			topxI[idx+1] = listItem(topxitem)
 		}
 		list := lipgloss.JoinVertical(
 			lipgloss.Left,
 			topxI...,
 		)
-		lists = append(lists, list)
+		lists[idx] = list
 	}
-	doc.WriteString(lipgloss.JoinHorizontal(lipgloss.Top, lists...))
+	return lists
+}
 
-	fmt.Println(docStyle.Render(doc.String()))
+func vistedStrings(pd letseat.PlaceDetails, cmd cobra.Command) []string {
+	highlightTop := 3
+	lvisited := []string{listHeader("\n\nLast Visited")}
+	for i, v := range pd {
+		lastD := int(getCurrentDate(&cmd).Sub(*v.LastVisit).Hours() / 24)
+		var li string
+		if i < highlightTop {
+			li = listItemMajor(fmt.Sprintf("%20v %10v days ago", v.Name, lastD))
+		} else {
+			li = listItem(fmt.Sprintf("%20v %10v days ago", v.Name, lastD))
+		}
+		lvisited = append(lvisited, li)
+	}
+	return lvisited
 }

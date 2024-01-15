@@ -31,7 +31,7 @@ func TestPeople(t *testing.T) {
 	}
 
 	for _, tt := range ts {
-		got := tt.diary.People()
+		got := tt.diary.people()
 		require.Equal(t, tt.want, got)
 	}
 }

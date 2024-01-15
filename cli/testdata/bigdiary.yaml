@@ -1,0 +1,947 @@
+# this is a thing
+---
+- place: Biggy Wings
+  date: 2023-12-21
+  takeout: true
+  ratings:
+    andrei: 3
+- place: McDonuoughs Pub
+  date: 2023-12-16
+  ratings:
+    andrei: 4
+- place: Franks Place
+  date: 2023-12-14
+  takeout: true
+  ratings:
+    andrei: 4
+    jeymes: 3
+- place: Sandies
+  date: 2023-12-09
+  ratings:
+    andrei: 5
+- place: BBQ Papa
+  date: 2023-12-07
+  takeout: true
+  ratings:
+    andrei: 3
+    jeymes: 4
+- place: Pizza Dude
+  date: 2023-12-02
+  ratings:
+    andrei: 5
+    jeymes: 4
+- place: Brrrs
+  date: 2023-11-30
+  takeout: true
+  ratings:
+    andrei: 5
+    jeymes: 5
+- place: Da Ale House
+  date: 2023-11-26
+  ratings:
+    andrei: 3
+- place: Trout River
+  date: 2023-11-23
+  ratings:
+    andrei: 3
+    jeymes: 5
+- place: Beatlemania
+  date: 2023-11-18
+  ratings:
+    andrei: 4
+- place: Franks Place
+  date: 2023-11-15
+  takeout: true
+  ratings:
+    andrei: 4
+- place: Old Person Wings
+  date: 2023-11-11
+  ratings:
+    andrei: 3
+    jeymes: 4
+- place: McDonuoughs Pub
+  date: 2023-11-04
+  ratings:
+    andrei: 4
+- place: Sandies
+  date: 2023-10-28
+  ratings:
+    andrei: 4
+    jeymes: 4
+- place: Brrrs
+  date: 2023-10-25
+  takeout: true
+  ratings:
+    andrei: 5
+- place: Trout River
+  date: 2023-10-22
+  ratings:
+    andrei: 3
+    jeymes: 4
+- place: Biggy Wings
+  date: 2023-10-18
+  takeout: true
+  ratings:
+    andrei: 3
+    jeymes: 4
+- place: Pizza Dude
+  date: 2023-10-15
+  ratings:
+    andrei: 4
+- place: Triple Barrel
+  date: 2023-10-11
+  takeout: true
+  ratings:
+    andrei: 3
+    jeymes: 5
+- place: Beatlemania
+  date: 2023-10-07
+  ratings:
+    andrei: 3
+    jeymes: 3
+- place: BBQ Papa
+  date: 2023-10-04
+  takeout: true
+  ratings:
+    andrei: 3
+    jeymes: 2
+- place: Sandies
+  date: 2023-10-04
+  takeout: true
+  ratings:
+    andrei: 2
+- place: McDonuoughs Pub
+  date: 2023-09-30
+  ratings:
+    andrei: 2
+- place: Brrrs
+  date: 2023-09-28
+  takeout: true
+  ratings:
+    andrei: 4
+    jeymes: 3
+- place: Sandies
+  takeout: true
+  date: 2023-09-23
+  ratings:
+    andrei: 4
+    jeymes: 4
+- place: BBQ Papa
+  date: 2023-09-21
+  takeout: true
+  ratings:
+    andrei: 4
+- place: Pizza Dude
+  date: 2023-09-17
+  ratings:
+    andrei: 4
+    jeymes: 5
+- place: Franks Place
+  date: 2023-09-13
+  takeout: true
+  ratings:
+    andrei: 4
+- place: Old Person Wings
+  date: 2023-09-09
+  ratings:
+    andrei: 4
+- place: Trout River
+  date: 2023-09-06
+  ratings:
+    andrei: 4
+- place: Mezcalito
+  date: 2023-09-02
+  ratings:
+    andrei: 5
+- place: Biggy Wings
+  date: 2023-08-30
+  takeout: true
+  ratings:
+    andrei: 2
+- place: Sandies
+  date: 2023-08-28
+  ratings:
+    andrei: 3
+- place: Brrrs
+  date: 2023-08-23
+  takeout: true
+  ratings:
+    andrei: 3
+- place: Beatlemania
+  date: 2023-08-19
+  ratings:
+    andrei: 4
+- place: Triple Barrel
+  date: 2023-08-17
+  ratings:
+    andrei: 5
+- place: McDonuoughs Pub
+  date: 2023-08-12
+  ratings:
+    andrei: 3
+- place: Pizza Dude
+  date: 2023-08-10
+  ratings:
+    andrei: 5
+- place: Trout River
+  date: 2023-08-05
+  ratings:
+    andrei: 4
+- place: Sandies
+  date: 2023-07-15
+  ratings:
+    andrei: 2
+- place: Drunken Noodles
+  date: 2023-07-13
+  ratings:
+    andrei: 4
+- place: McDonuoughs Pub
+  date: 2023-07-09
+  ratings:
+    andrei: 3
+- place: BBQ Papa
+  date: 2023-07-06
+  takeout: true
+  ratings:
+    andrei: 4
+- place: Old Person Wings
+  date: 2023-07-01
+  ratings:
+    andrei: 3
+- place: Triple Barrel
+  date: 2023-06-29
+  ratings:
+    andrei: 5
+    jeymes: 3
+    layla: 3
+- place: Beatlemania
+  date: 2023-06-24
+  ratings:
+    andrei: 5
+    jeymes: 5
+    layla: 5
+- place: Franks Place
+  date: 2023-06-21
+  takeout: true
+  ratings:
+    andrei: 5
+- place: Da Ale House
+  date: 2023-06-17
+  ratings:
+    andrei: 2
+- place: Biggy Wings
+  date: 2023-06-14
+  takeout: true
+  ratings:
+    andrei: 4
+- place: Brrrs
+  date: 2023-06-07
+  takeout: true
+  ratings:
+    andrei: 4
+- place: Sandies
+  date: 2023-06-10
+  ratings:
+    andrei: 5
+    jeymes: 4
+- place: McDonuoughs Pub
+  date: 2023-06-03
+  ratings:
+    andrei: 4
+- place: Pizza Dude
+  date: 2023-06-01
+  ratings:
+    andrei: 4
+    jeymes: 5
+    layla: 4
+- place: Trout River
+  date: 2023-05-28
+  ratings:
+    andrei: 4
+- place: BBQ Papa
+  date: 2023-05-25
+  takeout: true
+  ratings:
+    andrei: 4
+- place: Beatlemania
+  date: 2023-05-20
+  ratings:
+    andrei: 5
+    jeymes: 5
+- place: Franks Place
+  date: 2023-05-19
+  takeout: true
+  ratings:
+    andrei: 5
+    jeymes: 4
+- place: Old Person Wings
+  date: 2023-05-13
+  ratings:
+    andrei: 4
+- place: Biggy Wings
+  date: 2023-05-10
+  takeout: true
+  ratings:
+    andrei: 4
+    jeymes: 5
+- place: Da Ale House
+  date: 2023-05-06
+  ratings:
+    andrei: 3
+- place: Sandies
+  date: 2023-04-29
+  ratings:
+    andrei: 5
+    jeymes: 4
+- place: Pizza Dude
+  date: 2023-04-27
+  ratings:
+    andrei: 5
+    layla: 5
+- place: Trout River
+  date: 2023-04-22
+  ratings:
+    andrei: 3
+- place: Brrrs
+  date: 2023-04-19
+  takeout: true
+  ratings:
+    andrei: 4
+- place: McDonuoughs Pub
+  date: 2023-04-15
+  ratings:
+    andrei: 5
+    jeymes: 4
+- place: BBQ Papa
+  date: 2023-04-12
+  takeout: true
+  ratings:
+    andrei: 4
+    jeymes: 5
+- place: Beatlemania
+  date: 2023-04-08
+  ratings:
+    andrei: 3
+- place: Franks Place
+  date: 2023-04-05
+  takeout: true
+  ratings:
+    andrei: 5
+    jeymes: 4
+- place: Trout River
+  date: 2023-04-02
+  ratings:
+    andrei: 4
+    jeymes: 5
+- place: Biggy Wings
+  date: 2023-03-29
+  takeout: true
+  ratings:
+    andrei: 4
+- place: Sandies
+  date: 2023-03-25
+  ratings:
+    andrei: 5
+    jeymes: 5
+- place: Old Person Wings
+  date: 2023-03-18
+  ratings:
+    andrei: 3
+    jeymes: 4
+- place: Brrrs
+  date: 2023-03-15
+  takeout: true
+  ratings:
+    andrei: 3
+    jeymes: 4
+- place: Pizza Dude
+  date: 2023-03-11
+  ratings:
+    andrei: 4
+    jeymes: 4
+- place: BBQ Papa
+  date: 2023-03-08
+  takeout: true
+  ratings:
+    andrei: 4
+- place: McDonuoughs Pub
+  date: 2023-03-04
+  ratings:
+    andrei: 4
+- place: Franks Place
+  date: 2023-03-01
+  takeout: true
+  ratings:
+    andrei: 5
+    jeymes: 4
+- place: Da Ale House
+  date: 2023-02-25
+  ratings:
+    andrei: 3
+- place: Trout River
+  date: 2023-02-22
+  ratings:
+    andrei: 4
+- place: Beatlemania
+  date: 2023-02-18
+  ratings:
+    andrei: 5
+- place: Sandies
+  date: 2023-02-15
+  ratings:
+    andrei: 4
+    jeymes: 4
+- place: Biggy Wings
+  date: 2023-02-08
+  takeout: true
+  price: 29
+  ratings:
+    jeymes: 4
+    andrei: 3
+- place: Old Person Wings
+  date: 2023-02-04
+  ratings:
+    andrei: 3
+- place: Sandies
+  date: 2023-02-01
+  ratings:
+    andrei: 4
+- place: Brrrs
+  date: 2023-01-28
+  takeout: true
+  ratings:
+    andrei: 4
+- place: BBQ Papa
+  date: 2023-01-25
+  takeout: true
+  ratings:
+    andrei: 4
+    jeymes: 4
+- place: Bird Burgers
+  date: 2023-01-07
+  ratings:
+    andrei: 3
+- place: Pizza Dude
+  date: 2023-01-14
+  ratings:
+    andrei: 4
+    jeymes: 4
+- place: Sandies
+  date: 2023-01-13
+  ratings:
+    andrei: 3
+- place: Franks Place
+  date: 2023-01-05
+  takeout: true
+  ratings:
+    andrei: 4
+    layla: 5
+    jeymes: 4
+- place: Pizza Dude
+  date: 2022-12-31
+  takeout: true
+  ratings:
+    andrei: 4
+- place: McDonuoughs Pub
+  date: 2022-12-30
+  ratings:
+    andrei: 5
+- place: Trout River
+  date: 2022-12-29
+  ratings:
+    layla: 4
+    andrei: 4
+    jeymes: 4
+- place: BBQ Papa
+  date: 2022-12-26
+  takeout: true
+  ratings:
+    andrei: 4
+    jeymes: 5
+- place: Beatlemania
+  date: 2022-12-20
+  ratings:
+    andrei: 5
+- place: Da Ale House
+  date: 2022-12-17
+  ratings:
+    andrei: 3
+- place: Brrrs
+  date: 2022-12-16
+  takeout: true
+  ratings:
+    andrei: 4
+    jeymes: 4
+- place: Sandies
+  date: 2022-12-11
+  ratings:
+    andrei: 4
+    jeymes: 5
+    layla: 4
+- place: Franks Place
+  date: 2022-12-08
+  takeout: true
+  ratings:
+    andrei: 5
+    layla: 5
+    jeymes: 5
+- place: McDonuoughs Pub
+  date: 2022-12-03
+  ratings:
+    andrei: 4
+- place: Pizza Dude
+  date: 2022-12-01
+  takeout: true
+  ratings:
+    andrei: 5
+    jeymes: 4
+- place: Trout River
+  date: 2022-11-27
+  ratings:
+    andrei: 3
+- place: Old Person Wings
+  date: 2022-11-23
+  ratings:
+    andrei: 4
+- place: Beatlemania
+  date: 2022-11-19
+  ratings:
+    andrei: 4
+    jeymes: 5
+- place: Da Ale House
+  date: 2022-11-12
+  ratings:
+    andrei: 3
+- place: Sandies
+  date: 2022-10-09
+  ratings:
+    andrei: 4
+    jeymes: 4
+- place: McDonuoughs Pub
+  date: 2022-11-05
+  ratings:
+    andrei: 4
+- place: BBQ Papa
+  date: 2022-11-03
+  takeout: true
+  ratings:
+    andrei: 4
+    jeymes: 5
+- place: Brrrs
+  date: 2022-10-26
+  takeout: true
+  ratings:
+    andrei: 4
+    jeymes: 5
+- place: Trout River
+  date: 2022-10-22
+  ratings:
+    andrei: 4
+- place: Franks Place
+  date: 2022-10-18
+  takeout: true
+  ratings:
+    andrei: 5
+    layla: 5
+    jeymes: 3
+- place: Old Person Wings
+  date: 2022-10-15
+  ratings:
+    andrei: 3
+    jeymes: 3
+- place: Trout River
+  date: 2022-10-12
+  takeout: true
+  ratings:
+    andrei: 4
+- place: BBQ Papa
+  date: 2022-10-05
+  takeout: true
+  ratings:
+    andrei: 4
+- place: Pizza Dude
+  date: 2022-10-01
+  ratings:
+    jeymes: 5
+    andrei: 3
+    layla: 3
+- place: Sandies
+  date: 2022-09-28
+  ratings:
+    andrei: 5
+    jeymes: 3
+- place: Beatlemania
+  date: 2022-09-25
+  ratings:
+    andrei: 4
+- place: Trout River
+  date: 2022-09-21
+  takeout: true
+  ratings:
+    andrei: 3
+- place: Da Ale House
+  date: 2022-09-17
+  ratings:
+    andrei: 4
+- place: Franks Place
+  date: 2022-09-14
+  takeout: true
+  ratings:
+    andrei: 4
+    jeymes: 4
+- place: McDonuoughs Pub
+  date: 2022-09-10
+  ratings:
+    andrei: 3
+- place: Brrrs
+  date: 2022-09-7
+  takeout: true
+  ratings:
+    andrei: 4
+    jeymes: 4
+- place: Pizza Dude
+  date: 2022-09-03
+  ratings:
+    andrei: 4
+    jeymes: 4
+    layla: 4
+- place: Sandies
+  date: 2022-09-1
+  takeout: true
+  ratings:
+    andrei: 4
+    jeymes: 4
+- place: Old Person Wings
+  date: 2022-07-28
+  ratings:
+    jeymes: 5
+    andrei: 4
+    layla: 3
+- place: Trout River
+  date: 2022-08-26
+  takeout: true
+  ratings:
+    andrei: 4
+    jeymes: 4
+    layla: 4
+- place: BBQ Papa
+  date: 2022-08-20
+  takeout: true
+  ratings:
+    andrei: 4
+    jeymes: 5
+- place: Beatlemania
+  date: 2022-08-11
+  ratings:
+    andrei: 4
+- place: Da Ale House
+  date: 2022-08-06
+  ratings:
+    andrei: 3
+- place: Franks Place
+  date: 2022-08-04
+  takeout: true
+  price: 50
+  ratings:
+    jeymes: 4
+    andrei: 4
+    layla: 4
+- place: Sandies
+  date: 2022-07-21
+  takeout: true
+  ratings:
+    andrei: 3
+- place: Beatlemania
+  date: 2022-07-16
+  ratings:
+    andrei: 5
+- place: McDonuoughs Pub
+  date: 2022-07-09
+  ratings:
+    andrei: 3
+- place: Trout River
+  date: 2022-07-07
+  takeout: true
+  ratings:
+    andrei: 4
+    jeymes: 4
+- place: Sandies
+  date: 2022-07-02
+  ratings:
+    andrei: 5
+- place: Pizza Dude
+  date: 2022-07-01
+  ratings:
+    andrei: 5
+    jeymes: 5
+- place: Da Ale House
+  date: 2022-06-25
+  ratings:
+    layla: 3
+    andrei: 3
+    jeymes: 4
+- place: Brrrs
+  date: 2022-06-25
+  takeout: true
+  ratings:
+    andrei: 4
+    jeymes: 4
+- place: Old Person Wings
+  date: 2022-06-18
+  ratings:
+    andrei: 4
+    layla: 5
+    jeymes: 3
+- place: BBQ Papa
+  date: 2022-06-17
+  takeout: true
+  ratings:
+    andrei: 4
+- place: McDonuoughs Pub
+  date: 2022-06-12
+  price: 85
+  ratings:
+    andrei: 4
+- place: Bird Burgers
+  date: 2022-06-10
+  ratings:
+    jeymes: 5
+    layla: 5
+    andrei: 4
+- place: Sandies
+  date: 2022-06-04
+  ratings:
+    jeymes: 5
+    andrei: 4
+- place: Beatlemania
+  date: 2022-05-28
+  ratings:
+    jeymes: 5
+    andrei: 4
+- place: Trout River
+  date: 2022-06-02
+  price: 42
+  takeout: true
+  ratings:
+    andrei: 3
+    jeymes: 4
+- place: Pizza Dude
+  date: 2022-05-26
+  ratings:
+    andrei: 5
+    jeymes: 5
+- place: Franks Place
+  date: 2022-05-25
+  takeout: true
+  price: 28
+  ratings:
+    jeymes: 4
+    andrei: 4
+- place: Old Person Wings
+  date: 2022-05-21
+  ratings:
+    andrei: 4
+- place: BBQ Papa
+  date: 2022-05-19
+  takeout: true
+  ratings:
+    jeymes: 4
+    andrei: 4
+- place: McDonuoughs Pub
+  date: 2022-05-14
+  price: 81
+  ratings:
+    andrei: 4
+    jeymes: 4
+- place: Sandies
+  date: 2022-05-12
+  takeout: true
+  ratings:
+    jeymes: 4
+    layla: 4
+    andrei: 4
+- place: Pizza Dude
+  date: 2022-05-07
+  ratings:
+    andrei: 4
+    # jeymes: 5
+- place: Brrrs
+  date: 2022-05-05
+  takeout: true
+  ratings:
+    andrei: 4
+    jeymes: 3
+- place: Beatlemania
+  date: 2022-04-30
+  price: 71
+  ratings:
+    jeymes: 4
+    andrei: 4
+- place: Trout River
+  date: 2022-04-23
+  price: 37
+  ratings:
+    andrei: 3
+    jeymes: 5
+- place: Da Ale House
+  date: 2022-04-21
+  ratings:
+    andrei: 3
+    jeymes: 5
+- place: Old Person Wings
+  date: 2022-04-16
+  ratings:
+    andrei: 4
+    jeymes: 3
+- place: McDonuoughs Pub
+  date: 2022-04-09
+  price: 61
+  ratings:
+    andrei: 4
+    jeymes: 4
+    layla: 4
+- place: BBQ Papa
+  date: 2022-04-08
+  takeout: true
+  price: 29
+  ratings:
+    jeymes: 4
+    andrei: 4
+- place: Trout River
+  date: 2022-03-31
+  takeout: true
+  price: 37
+  ratings:
+    andrei: 4
+    jeymes: 4
+    layla: 5
+- place: Beatlemania
+  date: 2022-03-26
+  price: 69
+  ratings:
+    layla: 4
+    jeymes: 3
+    andrei: 3
+- place: Biggy Wings
+  date: 2022-03-24
+  takeout: true
+  price: 25
+  ratings:
+    jeymes: 2
+    andrei: 3
+- place: Sandies
+  date: 2022-03-19
+  ratings:
+    jeymes: 4
+    layla: 4
+    andrei: 4
+- place: Pizza Dude
+  date: 2022-03-17
+  takeout: true
+  ratings:
+    andrei: 4
+    layla: 4
+    jeymes: 5
+- place: Old Person Wings
+  date: 2022-03-13
+  ratings:
+    jeymes: 4
+    andrei: 5
+    layla: 5
+- place: BBQ Papa
+  date: 2022-03-10
+  takeout: true
+  ratings:
+    jeymes: 4
+    andrei: 4
+- place: McDonuoughs Pub
+  date: 2022-03-05
+  ratings:
+    andrei: 4
+    jeymes: 5
+    layla: 4
+- place: Trout River
+  date: 2022-03-03
+  takeout: true
+  ratings:
+    andrei: 4
+    jeymes: 4
+- place: Brrrs
+  date: 2022-02-24
+  takeout: true
+  ratings:
+    andrei: 4
+    jeymes: 3
+- place: Beatlemania
+  date: 2022-02-19
+  ratings:
+    andrei: 4
+    layla: 4
+    jeymes: 3
+- place: Old Person Wings
+  date: 2022-02-12
+  ratings:
+    andrei: 5
+    layla: 5
+    jeymes: 4
+- place: Pizza Dude
+  date: 2022-02-10
+  takeout: true
+  ratings:
+    andrei: 4
+    jeymes: 3
+- place: Sandies
+  date: 2022-02-05
+  ratings:
+    jeymes: 4
+    layla: 4
+    andrei: 4
+- place: BBQ Papa
+  date: 2022-02-03
+  takeout: true
+  ratings:
+    jeymes: 5
+    andrei: 4
+    layla: 5
+- place: McDonuoughs Pub
+  date: 2022-01-30
+  ratings:
+    jeymes: 3
+    layla: 4
+    andrei: 2
+- place: Biggy Wings
+  date: 2022-01-27
+  takeout: true
+  ratings:
+    jeymes: 3
+    andrei: 1
+- place: Trout River
+  date: 2022-01-19
+  ratings:
+    andrei: 4
+    jeymes: 4
+    layla: 3
+- place: Beatlemania
+  date: 2022-01-15
+  ratings:
+    andrei: 4
+    layla: 5
+    jeymes: 3
+- place: Pizza Dude
+  date: 2022-01-13
+  ratings:
+    andrei: 5
+    jeymes: 4
+    layla: 4
+- place: Biggy Wings
+  date: 2022-01-08
+  ratings:
+    jeymes: 2
+    andrei: 2
+- place: Brrrs
+  date: 2022-01-06
+  takeout: true
+  ratings:
+    jeymes: 4
+    layla: 4
+    andrei: 3

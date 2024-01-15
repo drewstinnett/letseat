@@ -149,12 +149,13 @@ linters-settings:
           - '$gostd'
           - "github.com/spf13/cobra"
           - "github.com/spf13/viper"
+          - "github.com/gosimple/slug"
+          - "github.com/montanaflynn/stats"
+          - "github.com/mitchellh/go-homedir"
           - "github.com/charmbracelet/lipgloss"
           - "github.com/drewstinnett/letseat/pkg"
           - "github.com/drewstinnett/letseat/cli/cmd"
           - "github.com/drewstinnett/go-output-format/v2/gout"
-          - "github.com/mitchellh/go-homedir"
-          - "github.com/montanaflynn/stats"
 
       tests:
         files:

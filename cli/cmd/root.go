@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"log/slog"
 	"os"
+	"time"
 
 	// ``"github.com/apex/log"
 
@@ -20,44 +20,56 @@ var (
 )
 
 // rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
-	Use:   "letseat",
-	Short: "Decide what to eat!",
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-		var err error
-		g, err = gout.NewWithCobraCmd(cmd, nil)
-		cobra.CheckErr(err)
-		g.SetWriter(os.Stdout)
-	},
-	// Run: func(cmd *cobra.Command, args []string) { },
+func newRootCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "letseat",
+		Short: "Decide what to eat!",
+		// Uncomment the following line if your bare application
+		// has an action associated with it:
+		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			var err error
+			g, err = gout.NewWithCobraCmd(cmd, nil)
+			cobra.CheckErr(err)
+			g.SetWriter(os.Stdout)
+		},
+		// Run: func(cmd *cobra.Command, args []string) { },
+	}
+	cmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.letseat.yaml)")
+	bindRootArgs(cmd)
+	cmd.AddCommand(newAnalyzeCmd())
+
+	return cmd
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	cobra.CheckErr(rootCmd.Execute())
+	cobra.CheckErr(newRootCmd().Execute())
 }
 
 func init() {
 	cobra.OnInitialize(initConfig)
-
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.letseat.yaml)")
-	bindRootArgs(rootCmd)
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 func bindRootArgs(cmd *cobra.Command) {
 	cmd.PersistentFlags().StringP("diary", "d", "diary.yaml", "diary file")
 	cmd.PersistentFlags().StringP("format", "f", "yaml", "Format of the output")
+	cmd.PersistentFlags().String("current-date", "", "Assume this as the current date, in the format YYYY-MM-DD")
+}
+
+func getCurrentDate(cmd *cobra.Command) time.Time {
+	ds, err := cmd.Flags().GetString("current-date")
+	if err != nil {
+		panic(err)
+	}
+	if ds == "" {
+		return time.Now()
+	}
+	t, err := time.Parse("2006-01-02", ds)
+	if err != nil {
+		panic(err)
+	}
+	return t
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -80,12 +92,5 @@ func initConfig() {
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
-	}
-}
-
-func checkErr(err error) {
-	if err != nil {
-		slog.Error("fatal error occurred", "error", err)
-		os.Exit(2)
 	}
 }
