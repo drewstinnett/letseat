@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"time"
@@ -69,4 +70,18 @@ func newEntryFilterWithCmd(cmd *cobra.Command) (*letseat.EntryFilter, error) {
 
 func toPTR[V any](v V) *V {
 	return &v
+}
+
+func validateDate(s string) error {
+	if _, err := time.Parse("2006-01-02", s); err != nil {
+		return err
+	}
+	return nil
+}
+
+func validatePlace(s string) error {
+	if s == "" {
+		return errors.New("place cannot be empty")
+	}
+	return nil
 }

@@ -26,6 +26,8 @@ func newRootCmd() *cobra.Command {
 		Short: "Decide what to eat!",
 		// Uncomment the following line if your bare application
 		// has an action associated with it:
+		SilenceUsage:  true,
+		SilenceErrors: true,
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 			var err error
 			g, err = gout.NewWithCobraCmd(cmd, nil)
@@ -36,7 +38,10 @@ func newRootCmd() *cobra.Command {
 	}
 	cmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.letseat.yaml)")
 	bindRootArgs(cmd)
-	cmd.AddCommand(newAnalyzeCmd())
+	cmd.AddCommand(
+		newAnalyzeCmd(),
+		newLogCmd(),
+	)
 
 	return cmd
 }

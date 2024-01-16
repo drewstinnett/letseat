@@ -2,8 +2,10 @@ package letseat
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
+	"gopkg.in/yaml.v2"
 )
 
 func TestEntryAverage(t *testing.T) {
@@ -139,5 +141,48 @@ func TestNew(t *testing.T) {
 			Entry{Place: "Some Takeout Place", IsTakeout: true},
 		},
 		d.Entries(),
+	)
+}
+
+func TestLog(t *testing.T) {
+	d := New()
+	d.Log(
+		&Entry{
+			Place: "heaven",
+		},
+	)
+	require.Equal(
+		t,
+		&Entries{{Place: "heaven"}},
+		d.entries,
+	)
+	require.Equal(
+		t,
+		Entries{{Place: "heaven"}},
+		d.unfilteredEntries,
+	)
+}
+
+func TestEntryUnmarshal(t *testing.T) {
+	y := `place: Mamacitas
+date: 2024-01-15T00:00:00Z
+takeout: true
+ratings:
+  drew: 5
+  james: 3`
+
+	var got Entry
+	require.NoError(t, yaml.Unmarshal([]byte(y), &got))
+	require.Equal(
+		t,
+		Entry{
+			Place:     "Mamacitas",
+			Date:      toPTR(time.Date(2024, time.January, 15, 0, 0, 0, 0, time.UTC)),
+			IsTakeout: true, Ratings: map[string]int{
+				"drew":  5,
+				"james": 3,
+			},
+		},
+		got,
 	)
 }

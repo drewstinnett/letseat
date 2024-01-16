@@ -26,6 +26,12 @@ func (d Diary) Entries() Entries {
 	return *d.entries
 }
 
+// Log logs a new entry to your diary
+func (d *Diary) Log(e *Entry) {
+	d.unfilteredEntries = append(d.unfilteredEntries, *e)
+	*d.entries = append(*d.entries, *e)
+}
+
 // MostPopularPlace just returns the most popular place
 func (d Diary) MostPopularPlace() string {
 	return mostFrequent(d.entries.placeNames())
@@ -34,7 +40,7 @@ func (d Diary) MostPopularPlace() string {
 // PlaceDetails is just some detail summary pieces of the places in your diary
 func (d Diary) PlaceDetails() PlaceDetails {
 	e := d.Entries()
-	places := e.uniquePlaceNames()
+	places := e.UniquePlaceNames()
 	ret := make(PlaceDetails, len(places))
 	for idx, place := range places {
 		d := e.placeDetails(place)
@@ -90,9 +96,9 @@ type Entries []Entry
 // Entry represents a log about your visit to a restaurant
 type Entry struct {
 	Place     string         `yaml:"place"`
-	Cost      int            `yaml:"cost"`
+	Cost      int            `yaml:"cost,omitempty"`
 	Date      *time.Time     `yaml:"date"`
-	IsTakeout bool           `yaml:"takeout"`
+	IsTakeout bool           `yaml:"takeout,omitempty"`
 	Ratings   map[string]int `yaml:"ratings"`
 }
 
@@ -178,7 +184,8 @@ func (e *Entries) placeNames() []string {
 	return places
 }
 
-func (e *Entries) uniquePlaceNames() []string {
+// UniquePlaceNames are just the simple place names as strings
+func (e *Entries) UniquePlaceNames() []string {
 	places := []string{}
 	for _, entry := range *e {
 		if !slices.Contains(places, entry.Place) {
