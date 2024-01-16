@@ -1,6 +1,9 @@
 package letseat
 
 import (
+	"io"
+	"os"
+	"path"
 	"testing"
 	"time"
 
@@ -141,6 +144,38 @@ func TestNew(t *testing.T) {
 			Entry{Place: "Some Takeout Place", IsTakeout: true},
 		},
 		d.Entries(),
+	)
+}
+
+func TestFileWrite(t *testing.T) {
+	tmpFile := path.Join(t.TempDir(), "diary.yaml")
+	// fh, err := os.Open(tmpFile)
+	// require.NoError(t, err)
+	err := os.WriteFile(tmpFile, []byte(`- place: Yummy Yums
+  date: 2024-01-12`), 0o600)
+	require.NoError(t, err)
+	d := New(WithEntriesFile(tmpFile))
+	d.Log(
+		&Entry{
+			Place: "mr potatoes bar and grill",
+			Date:  toPTR(time.Date(2024, 1, 13, 0, 0, 0, 0, time.UTC)),
+		},
+	)
+	require.NoError(t, d.WriteEntries())
+
+	// Now check the contents
+	fh, err := os.Open(tmpFile)
+	require.NoError(t, err)
+	got, err := io.ReadAll(fh)
+	require.NoError(t, err)
+	require.Equal(
+		t,
+		`- place: Yummy Yums
+  date: 2024-01-12T00:00:00Z
+- place: mr potatoes bar and grill
+  date: 2024-01-13T00:00:00Z
+`,
+		string(got),
 	)
 }
 

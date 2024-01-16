@@ -4,6 +4,7 @@ Package letseat is the main thing that decides where to go for dindin
 package letseat
 
 import (
+	"errors"
 	"os"
 	"path"
 	"slices"
@@ -19,6 +20,7 @@ type Diary struct {
 	unfilteredEntries Entries
 	entries           *Entries
 	filter            EntryFilter
+	fn                string
 }
 
 // Entries returns all the entries matching the filter
@@ -77,6 +79,7 @@ func WithEntriesFile(fn string) func(*Diary) {
 	}
 	return func(d *Diary) {
 		d.unfilteredEntries = e
+		d.fn = fn
 	}
 }
 
@@ -90,6 +93,27 @@ func New(opts ...func(*Diary)) *Diary {
 	return d
 }
 
+// WriteEntries write the entries back to a yaml file
+func (d Diary) WriteEntries() error {
+	if d.fn == "" {
+		return errors.New("filename cannot be blank")
+	}
+
+	entries, err := yaml.Marshal(d.unfilteredEntries)
+	if err != nil {
+		return err
+	}
+	sort.SliceStable(d.unfilteredEntries, func(i, j int) bool {
+		return !d.unfilteredEntries[i].Date.After(*d.unfilteredEntries[j].Date)
+	})
+
+	err = os.WriteFile(d.fn, entries, 0o600)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // Entries is multiple DiaryEntry objects
 type Entries []Entry
 
@@ -99,7 +123,7 @@ type Entry struct {
 	Cost      int            `yaml:"cost,omitempty"`
 	Date      *time.Time     `yaml:"date"`
 	IsTakeout bool           `yaml:"takeout,omitempty"`
-	Ratings   map[string]int `yaml:"ratings"`
+	Ratings   map[string]int `yaml:"ratings,omitempty"`
 }
 
 func (d *Entry) ratingValuesAsFloat64() []float64 {
@@ -193,6 +217,7 @@ func (e *Entries) UniquePlaceNames() []string {
 		}
 	}
 
+	sort.Strings(places)
 	return places
 }
 
