@@ -105,9 +105,8 @@ func runLog(cmd *cobra.Command, args []string) error {
 	e := newEntryForm()
 
 	// Get the people here
-	ratingInputs := newRatingInputs(entries.PeopleEnhanced(), e)
 
-	form := huh.NewForm(
+	if err := huh.NewForm(
 		huh.NewGroup(
 			huh.NewInput().
 				Title("Date").
@@ -131,10 +130,9 @@ func runLog(cmd *cobra.Command, args []string) error {
 			return e.place != ""
 		}),
 		huh.NewGroup(
-			ratingInputs...,
+			newRatingInputs(entries.PeopleEnhanced(), e)...,
 		),
-	)
-	if err := form.Run(); err != nil {
+	).Run(); err != nil {
 		return err
 	}
 
@@ -148,8 +146,6 @@ func runLog(cmd *cobra.Command, args []string) error {
 	if err := diary.WriteEntries(); err != nil {
 		return err
 	}
-
-	gout.MustPrint(diary.Entries())
 
 	return nil
 }

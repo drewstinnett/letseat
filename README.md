@@ -1,6 +1,10 @@
+<p align="center">
+  <img alt="LetsEat Logo" src="./images/letseat-200.png" height="200" />
+  <h3 align="center">Lets Eat!</h3>
+  <p align="center">Figure out where to go for dinner, based on past experience.</p>
+</p>
+---
 # Lets Eat
-
-![logo](./images/letseat-200.png)
 
 Little utility to look at past takeout/dinein ratings, and decide what to do or
 where to go next.
