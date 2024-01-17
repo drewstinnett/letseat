@@ -41,6 +41,7 @@ func newRootCmd() *cobra.Command {
 	cmd.AddCommand(
 		newAnalyzeCmd(),
 		newLogCmd(),
+		newRecommendCommand(),
 	)
 
 	return cmd
