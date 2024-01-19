@@ -1,3 +1,5 @@
 *.swp
 diary.yaml*
 places.yaml
+dist/
+completions/

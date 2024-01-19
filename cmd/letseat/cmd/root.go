@@ -17,6 +17,7 @@ var (
 	cfgFile string
 	g       *gout.Client
 	config  configPaths
+	version string = "dev"
 )
 
 type configPaths struct {
@@ -29,10 +30,9 @@ type configPaths struct {
 // rootCmd represents the base command when called without any subcommands
 func newRootCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "letseat",
-		Short: "Decide what to eat!",
-		// Uncomment the following line if your bare application
-		// has an action associated with it:
+		Use:           "letseat",
+		Short:         "Decide what to eat!",
+		Version:       version,
 		SilenceUsage:  true,
 		SilenceErrors: true,
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {

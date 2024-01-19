@@ -1,0 +1,58 @@
+---
+before:
+  hooks:
+    - go mod tidy
+    - ./scripts/completions.sh
+builds:
+  - env:
+      - CGO_ENABLED=0
+    main: ./cmd/letseat/
+    mod_timestamp: '{{ .CommitTimestamp }}'
+    ldflags:
+      - '-s -w'
+      - -X github.com/drewstinnett/letseat/cmd/letseat/cmd.date={{ .CommitTimestamp }}
+      - -X github.com/drewstinnett/letseat/cmd/letseat/cmd.version={{ .Tag }}
+      - -X github.com/drewstinnett/letseat/cmd/letseat/cmd.commit={{ .ShortCommit }}
+    flags:
+      - -trimpath
+    goos:
+      - darwin
+      - linux
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: darwin
+        goarch: '386'
+    binary: 'letseat'
+archives:
+  - format: tar.gz
+    name_template: 'letseat-{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+    files:
+      - completions/*
+checksum:
+  name_template: 'letseat-{{ .Version }}_SHA256SUMS'
+  algorithm: sha256
+snapshot:
+  name_template: "{{ .Tag }}-snapshot"
+changelog:
+  skip: true
+brews:
+  - name: 'letseat'
+    repository:
+      owner: drewstinnett
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    description: "Figure out where to go for dinner!"
+    homepage: "https://github.com/drewstinnett/letseat"
+    license: BSD-2-Clause
+    caveats: |
+      Add the following in your ~/.zshrc or ~/.profile for faster typin':
+
+        alias tp="#{opt_bin}/letseat"
+    install: |-
+      bin.install "letseat"
+      bash_completion.install "completions/letseat.bash" => "letseat"
+      zsh_completion.install "completions/letseat.zsh" => "_letseat"
+      fish_completion.install "completions/letseat.fish"

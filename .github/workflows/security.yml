@@ -1,0 +1,18 @@
+name: Security Scans
+on:
+  push:
+  pull_request:
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    env:
+      TZ: "America/New_York"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-go@v4
+        with:
+          go-version: 'stable'
+      - id: govulncheck
+        uses: golang/govulncheck-action@v1
