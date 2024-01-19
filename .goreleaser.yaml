@@ -42,7 +42,7 @@ brews:
   - name: 'letseat'
     repository:
       owner: drewstinnett
-      name: homebrew-letseat
+      name: homebrew-tap
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
     description: "Figure out where to go for dinner!"
     homepage: "https://github.com/drewstinnett/letseat"
