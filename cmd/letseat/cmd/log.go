@@ -3,6 +3,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/charmbracelet/huh"
@@ -146,6 +147,7 @@ func runLog(cmd *cobra.Command, args []string) error {
 	if err := diary.WriteEntries(); err != nil {
 		return err
 	}
+	slog.Info("logged!")
 
 	return nil
 }

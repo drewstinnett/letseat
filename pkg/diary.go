@@ -67,6 +67,12 @@ func WithFilter(f EntryFilter) func(*Diary) {
 
 // WithEntriesFile adds the entries from a yaml file to a diary
 func WithEntriesFile(fn string) func(*Diary) {
+	if !checkFileExists(fn) {
+		err := os.WriteFile(fn, []byte("---\n"), 0o600)
+		if err != nil {
+			panic(err)
+		}
+	}
 	y, err := os.ReadFile(path.Clean(fn))
 	if err != nil {
 		panic(err)

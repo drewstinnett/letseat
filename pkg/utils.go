@@ -2,6 +2,7 @@ package letseat
 
 import (
 	"errors"
+	"os"
 	"strings"
 	"time"
 )
@@ -209,4 +210,9 @@ func Stars(num float64, icon string) string {
 
 func toPTR[V any](v V) *V {
 	return &v
+}
+
+func checkFileExists(filePath string) bool {
+	_, err := os.Stat(filePath)
+	return !errors.Is(err, os.ErrNotExist)
 }
