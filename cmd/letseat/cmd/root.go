@@ -1,23 +1,30 @@
 package cmd
 
 import (
-	"fmt"
+	"log/slog"
 	"os"
+	"path"
 	"time"
 
-	// ``"github.com/apex/log"
-
+	"github.com/adrg/xdg"
 	"github.com/spf13/cobra"
 
 	"github.com/drewstinnett/go-output-format/v2/gout"
-	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 )
 
 var (
 	cfgFile string
 	g       *gout.Client
+	config  configPaths
 )
+
+type configPaths struct {
+	ConfigPath string
+	ConfigFile string
+	DataPath   string
+	DataFile   string
+}
 
 // rootCmd represents the base command when called without any subcommands
 func newRootCmd() *cobra.Command {
@@ -42,6 +49,7 @@ func newRootCmd() *cobra.Command {
 		newAnalyzeCmd(),
 		newLogCmd(),
 		newRecommendCommand(),
+		newConfigCmd(),
 	)
 
 	return cmd
@@ -54,11 +62,23 @@ func Execute() {
 }
 
 func init() {
+	data := path.Join(xdg.DataHome, "letseat")
+	if !exists(data) {
+		if err := os.MkdirAll(data, 0o700); err != nil {
+			panic(err)
+		}
+	}
+	config = configPaths{
+		ConfigPath: path.Join(xdg.ConfigHome, "letseat"),
+		DataPath:   data,
+		DataFile:   path.Join(data, "diary.yaml"),
+	}
 	cobra.OnInitialize(initConfig)
 }
 
 func bindRootArgs(cmd *cobra.Command) {
-	cmd.PersistentFlags().StringP("diary", "d", "diary.yaml", "diary file")
+	// cmd.PersistentFlags().StringP("diary", "d", config.DataFile, "diary file")
+	cmd.PersistentFlags().StringP("diary", "d", config.DataFile, "diary file")
 	cmd.PersistentFlags().StringP("format", "f", "yaml", "Format of the output")
 	cmd.PersistentFlags().String("current-date", "", "Assume this as the current date, in the format YYYY-MM-DD")
 }
@@ -80,23 +100,20 @@ func getCurrentDate(cmd *cobra.Command) time.Time {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if cfgFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
-	} else {
-		// Find home directory.
-		home, err := homedir.Dir()
-		cobra.CheckErr(err)
+	// Find home directory.
+	// home, err := homedir.Dir()
+	// cobra.CheckErr(err)
 
-		// Search config in home directory with name ".cli" (without extension).
-		viper.AddConfigPath(home)
-		viper.SetConfigName(".letseat")
-	}
+	// Search config in home directory with name ".cli" (without extension).
+	// viper.AddConfigPath(home)
+	viper.SetConfigName("letseat")
+	viper.AddConfigPath(config.ConfigPath)
 
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+		config.ConfigFile = viper.ConfigFileUsed()
+		slog.Info("using config file", "file", config.DataFile)
 	}
 }

@@ -4,7 +4,10 @@ Package cmd is the cli app
 package cmd
 
 import (
+	"errors"
 	"fmt"
+	"log/slog"
+	"os"
 	"sort"
 	"strings"
 
@@ -39,6 +42,10 @@ func runAnalyze(cmd *cobra.Command, args []string) error {
 
 	// Find best rated meals
 	placesDetails := diary.PlaceDetails()
+	if len(placesDetails) == 0 {
+		slog.Error(fmt.Sprintf("No entries found! Try adding some with %v log", os.Args[0]))
+		return errors.New("no entries found")
+	}
 
 	// Print highest rated
 	sort.Sort(placesDetails)

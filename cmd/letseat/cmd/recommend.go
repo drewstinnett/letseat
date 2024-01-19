@@ -9,6 +9,7 @@ import (
 	"github.com/charmbracelet/glamour"
 	letseat "github.com/drewstinnett/letseat/pkg"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func newRecommendCommand() *cobra.Command {
@@ -42,19 +43,23 @@ func runRecommend(cmd *cobra.Command, args []string) error {
 	}
 	doc.WriteString("\n")
 
-	out, err := getRenderer().Render(doc.String())
+	out, err := getRenderer().Render(docStyle.Render(doc.String()))
 	if err != nil {
 		return err
 	}
-	fmt.Print(out)
+	fmt.Fprint(cmd.OutOrStdout(), docStyle.Render(out))
 
 	return nil
 }
 
 func getRenderer() *glamour.TermRenderer {
+	theme := viper.GetString("theme")
+	if theme == "" {
+		theme = "dark"
+	}
 	r, err := glamour.NewTermRenderer(
 		// glamour.WithAutoStyle(),
-		glamour.WithStandardStyle("light"),
+		glamour.WithStandardStyle(theme),
 		glamour.WithWordWrap(80),
 	)
 	panicIfErr(err)

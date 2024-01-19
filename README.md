@@ -3,7 +3,9 @@
   <h3 align="center">Lets Eat!</h3>
   <p align="center">Figure out where to go for dinner, based on past experience.</p>
 </p>
+
 ---
+
 # Lets Eat
 
 Little utility to look at past takeout/dinein ratings, and decide what to do or

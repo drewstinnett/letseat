@@ -147,6 +147,7 @@ linters-settings:
             desc: "Use log/slog so we can always do structured logging, via the logger"
         allow:
           - '$gostd'
+          - "github.com/adrg/xdg"
           - "github.com/spf13/cobra"
           - "github.com/spf13/viper"
           - "github.com/gosimple/slug"
@@ -154,6 +155,7 @@ linters-settings:
           - "github.com/montanaflynn/stats"
           - "github.com/mitchellh/go-homedir"
           - "github.com/drewstinnett/gout/v2"
+          - "github.com/charmbracelet/glamour"
           - "github.com/charmbracelet/lipgloss"
           - "github.com/drewstinnett/letseat/pkg"
           - "github.com/drewstinnett/letseat/cmd/letseat/cmd"

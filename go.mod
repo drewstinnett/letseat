@@ -3,13 +3,13 @@ module github.com/drewstinnett/letseat
 go 1.21
 
 require (
+	github.com/adrg/xdg v0.4.0
 	github.com/charmbracelet/glamour v0.6.0
 	github.com/charmbracelet/huh v0.2.3
 	github.com/charmbracelet/lipgloss v0.9.1
 	github.com/drewstinnett/go-output-format/v2 v2.1.0
 	github.com/drewstinnett/gout/v2 v2.1.2
 	github.com/gosimple/slug v1.13.1
-	github.com/mitchellh/go-homedir v1.1.0
 	github.com/montanaflynn/stats v0.7.1
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.16.0
