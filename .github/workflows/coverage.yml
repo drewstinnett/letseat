@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  build:
+  coverage:
     runs-on: ubuntu-latest
     env:
       TZ: "America/New_York"
