@@ -6,6 +6,8 @@ import (
 	"path"
 	"time"
 
+	"github.com/charmbracelet/log"
+
 	"github.com/adrg/xdg"
 	"github.com/spf13/cobra"
 
@@ -18,6 +20,7 @@ var (
 	g       *gout.Client
 	config  configPaths
 	version string = "dev"
+	verbose bool
 )
 
 type configPaths struct {
@@ -43,7 +46,8 @@ func newRootCmd() *cobra.Command {
 		},
 		// Run: func(cmd *cobra.Command, args []string) { },
 	}
-	cmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.letseat.yaml)")
+	cmd.PersistentFlags().StringVar(&cfgFile, "config", "", "use a custom configuration")
+	cmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "use verbose logging")
 	bindRootArgs(cmd)
 	cmd.AddCommand(
 		newAnalyzeCmd(),
@@ -58,7 +62,11 @@ func newRootCmd() *cobra.Command {
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	cobra.CheckErr(newRootCmd().Execute())
+	err := newRootCmd().Execute()
+	if err != nil {
+		slog.Error("exiting", "error", err)
+		os.Exit(2)
+	}
 }
 
 func init() {
@@ -103,6 +111,14 @@ func initConfig() {
 	// Find home directory.
 	// home, err := homedir.Dir()
 	// cobra.CheckErr(err)
+	opts := log.Options{}
+	if verbose {
+		opts.Level = log.DebugLevel
+	}
+	logger := slog.New(
+		log.NewWithOptions(os.Stderr, opts),
+	)
+	slog.SetDefault(logger)
 
 	// Search config in home directory with name ".cli" (without extension).
 	// viper.AddConfigPath(home)
@@ -110,10 +126,9 @@ func initConfig() {
 	viper.AddConfigPath(config.ConfigPath)
 
 	viper.AutomaticEnv() // read in environment variables that match
-
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		config.ConfigFile = viper.ConfigFileUsed()
-		slog.Info("using config file", "file", config.DataFile)
+		slog.Debug("using config file", "file", config.ConfigFile)
 	}
 }
