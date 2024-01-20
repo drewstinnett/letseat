@@ -5,6 +5,7 @@
 </p>
 
 ---
+[![codecov](https://codecov.io/gh/drewstinnett/letseat/graph/badge.svg?token=L5DYWFXHRE)](https://codecov.io/gh/drewstinnett/letseat)
 
 # Lets Eat
 
