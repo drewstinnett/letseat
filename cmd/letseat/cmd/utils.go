@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"strconv"
 	"time"
 
 	letseat "github.com/drewstinnett/letseat/pkg"
@@ -78,6 +79,11 @@ func validateDate(s string) error {
 		return err
 	}
 	return nil
+}
+
+func validateNumber(s string) error {
+	_, err := strconv.Atoi(s)
+	return err
 }
 
 func validatePlace(s string) error {

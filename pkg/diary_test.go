@@ -1,15 +1,21 @@
 package letseat
 
 import (
-	"io"
-	"os"
 	"path"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/require"
+	bolt "go.etcd.io/bbolt"
 	"gopkg.in/yaml.v2"
 )
+
+func newTestDB(t *testing.T) *bolt.DB {
+	dbf := path.Join(t.TempDir(), "test.db")
+	db, err := bolt.Open(dbf, 0o600, nil)
+	require.NoError(t, err)
+	return db
+}
 
 func TestEntryAverage(t *testing.T) {
 	ts := []struct {
@@ -116,15 +122,21 @@ func TestPopularPlace(t *testing.T) {
 		},
 	}
 	for _, tt := range ts {
-		d := New(WithEntries(tt.entries))
+		d := New(
+			WithDB(newTestDB(t)),
+			WithEntries(tt.entries),
+		)
 		got := d.MostPopularPlace()
 		require.Equal(t, tt.want, got)
 	}
 }
 
 func TestNew(t *testing.T) {
-	require.NotNil(t, New())
+	require.NotNil(t, New(
+		WithDB(newTestDB(t)),
+	))
 	d := New(
+		WithDB(newTestDB(t)),
 		WithEntries(
 			Entries{
 				Entry{Place: "Some Dine-In Place"},
@@ -147,42 +159,12 @@ func TestNew(t *testing.T) {
 	)
 }
 
-func TestFileWrite(t *testing.T) {
-	tmpFile := path.Join(t.TempDir(), "diary.yaml")
-	// fh, err := os.Open(tmpFile)
-	// require.NoError(t, err)
-	err := os.WriteFile(tmpFile, []byte(`- place: Yummy Yums
-  date: 2024-01-12`), 0o600)
-	require.NoError(t, err)
-	d := New(WithEntriesFile(tmpFile))
-	d.Log(
-		&Entry{
-			Place: "mr potatoes bar and grill",
-			Date:  toPTR(time.Date(2024, 1, 13, 0, 0, 0, 0, time.UTC)),
-		},
-	)
-	require.NoError(t, d.WriteEntries())
-
-	// Now check the contents
-	fh, err := os.Open(tmpFile)
-	require.NoError(t, err)
-	got, err := io.ReadAll(fh)
-	require.NoError(t, err)
-	require.Equal(
-		t,
-		`- place: Yummy Yums
-  date: 2024-01-12T00:00:00Z
-- place: mr potatoes bar and grill
-  date: 2024-01-13T00:00:00Z
-`,
-		string(got),
-	)
-}
-
 func TestLog(t *testing.T) {
-	d := New()
+	d := New(
+		WithDB(newTestDB(t)),
+	)
 	d.Log(
-		&Entry{
+		Entry{
 			Place: "heaven",
 		},
 	)
@@ -190,11 +172,6 @@ func TestLog(t *testing.T) {
 		t,
 		&Entries{{Place: "heaven"}},
 		d.entries,
-	)
-	require.Equal(
-		t,
-		Entries{{Place: "heaven"}},
-		d.unfilteredEntries,
 	)
 }
 
@@ -220,4 +197,12 @@ ratings:
 		},
 		got,
 	)
+}
+
+func TestWithDB(t *testing.T) {
+	db := newTestDB(t)
+	got := New(WithDB(db))
+	require.NotNil(t, got)
+	require.NotNil(t, got.db)
+	require.NotNil(t, New(WithDBFilename(path.Join(t.TempDir(), "test-fn.db"))))
 }

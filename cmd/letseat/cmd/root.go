@@ -54,6 +54,7 @@ func newRootCmd() *cobra.Command {
 		newLogCmd(),
 		newRecommendCommand(),
 		newConfigCmd(),
+		newImportCmd(),
 	)
 
 	return cmd
@@ -79,14 +80,14 @@ func init() {
 	config = configPaths{
 		ConfigPath: path.Join(xdg.ConfigHome, "letseat"),
 		DataPath:   data,
-		DataFile:   path.Join(data, "diary.yaml"),
+		DataFile:   path.Join(data, "data.db"),
 	}
 	cobra.OnInitialize(initConfig)
 }
 
 func bindRootArgs(cmd *cobra.Command) {
 	// cmd.PersistentFlags().StringP("diary", "d", config.DataFile, "diary file")
-	cmd.PersistentFlags().StringP("diary", "d", config.DataFile, "diary file")
+	cmd.PersistentFlags().StringP("data", "d", config.DataFile, "Database containing all entries")
 	cmd.PersistentFlags().StringP("format", "f", "yaml", "Format of the output")
 	cmd.PersistentFlags().String("current-date", "", "Assume this as the current date, in the format YYYY-MM-DD")
 }
