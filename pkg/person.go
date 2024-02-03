@@ -1,7 +1,6 @@
 package letseat
 
 import (
-	"encoding/json"
 	"sort"
 )
 
@@ -11,6 +10,7 @@ type Person struct {
 	PlaceAvgRatings map[string]float64
 }
 
+/*
 func (p Person) mustMarshal() []byte {
 	b, err := json.Marshal(p)
 	if err != nil {
@@ -18,6 +18,7 @@ func (p Person) mustMarshal() []byte {
 	}
 	return b
 }
+*/
 
 // FavoriteN returns the persons N favorite restaurants
 func (p *Person) FavoriteN(n int) []string {

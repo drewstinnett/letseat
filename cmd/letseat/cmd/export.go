@@ -24,6 +24,7 @@ func runExport(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+	defer dclose(diary)
 	fmt.Fprint(cmd.OutOrStdout(), string(out))
-	return diary.Close()
+	return nil
 }

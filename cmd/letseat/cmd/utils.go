@@ -3,6 +3,8 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"io"
+	"log/slog"
 	"os"
 	"reflect"
 	"strconv"
@@ -103,4 +105,10 @@ func exists(path string) bool {
 		return false
 	}
 	return false
+}
+
+func dclose(c io.Closer) {
+	if err := c.Close(); err != nil {
+		slog.Error("error closing file")
+	}
 }

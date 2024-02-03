@@ -27,6 +27,7 @@ func runImport(cmd *cobra.Command, args []string) error {
 	diary := letseat.New(
 		letseat.WithDBFilename(mustGetCmd[string](*cmd, "data")),
 	)
+	defer dclose(diary)
 	eb, err := os.ReadFile(args[0])
 	if err != nil {
 		return err
@@ -46,15 +47,7 @@ func runImport(cmd *cobra.Command, args []string) error {
 	if rerr != nil {
 		slog.Error("error running progressbar", "error", rerr)
 	}
-	return diary.Close()
-	/*
-		for _, entry := range entries {
-			entry := entry
-			if err := diary.Log(entry); err != nil {
-				return err
-			}
-		}
-	*/
+	return nil
 }
 
 type pbar struct {
