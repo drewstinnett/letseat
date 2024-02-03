@@ -77,7 +77,6 @@ func (p pbar) View() string {
 func (p pbar) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		panic("foo")
 		return p, tea.Quit
 
 	case tea.WindowSizeMsg:
