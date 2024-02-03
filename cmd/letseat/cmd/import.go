@@ -46,6 +46,7 @@ func runImport(cmd *cobra.Command, args []string) error {
 	if rerr != nil {
 		slog.Error("error running progressbar", "error", rerr)
 	}
+	return diary.Close()
 	/*
 		for _, entry := range entries {
 			entry := entry
@@ -54,7 +55,6 @@ func runImport(cmd *cobra.Command, args []string) error {
 			}
 		}
 	*/
-	return nil
 }
 
 type pbar struct {

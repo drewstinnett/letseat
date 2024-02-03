@@ -13,6 +13,7 @@ import (
 
 	"github.com/montanaflynn/stats"
 	bolt "go.etcd.io/bbolt"
+	"gopkg.in/yaml.v2"
 )
 
 // Diary is the thing holding all of your visits and info
@@ -27,6 +28,42 @@ type Diary struct {
 // Entries returns all the entries matching the filter
 func (d Diary) Entries() Entries {
 	return *d.entries
+}
+
+// Close closes the database
+func (d Diary) Close() error {
+	return d.db.Close()
+}
+
+func (d Diary) allEntries() (Entries, error) {
+	ret := Entries{}
+	if verr := d.db.View(func(tx *bolt.Tx) error {
+		// Assume bucket exists and has keys
+		c := tx.Bucket([]byte(EntriesBucket)).Cursor()
+
+		for k, v := c.First(); k != nil; k, v = c.Next() {
+			var e Entry
+			err := json.Unmarshal(v, &e)
+			if err != nil {
+				return err
+			}
+			ret = append(ret, e)
+			// fmt.Printf("key=%s, value=%s\n", k, v)
+		}
+		return nil
+	}); verr != nil {
+		return nil, verr
+	}
+	return ret, nil
+}
+
+// Export returns all entries in yaml form
+func (d Diary) Export() ([]byte, error) {
+	entries, err := d.allEntries()
+	if err != nil {
+		return nil, err
+	}
+	return yaml.Marshal(entries)
 }
 
 // Log logs a new entry to your diary
