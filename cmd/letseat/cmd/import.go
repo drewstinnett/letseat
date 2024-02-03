@@ -44,7 +44,7 @@ func runImport(cmd *cobra.Command, args []string) error {
 		current:  &zero,
 	}
 	// fn, _ := os.Open("/tmp/whatever.txt")
-	_, rerr := tea.NewProgram(pb, tea.WithInput(os.Stdin)).Run()
+	_, rerr := tea.NewProgram(pb, tea.WithInput(os.Stdout)).Run()
 	if rerr != nil {
 		slog.Error("error running progressbar", "error", rerr)
 	}
