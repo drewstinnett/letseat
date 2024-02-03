@@ -43,7 +43,8 @@ func runImport(cmd *cobra.Command, args []string) error {
 		entries:  entries,
 		current:  &zero,
 	}
-	_, rerr := tea.NewProgram(pb).Run()
+	// fn, _ := os.Open("/tmp/whatever.txt")
+	_, rerr := tea.NewProgram(pb, tea.WithInput(os.Stdin)).Run()
 	if rerr != nil {
 		slog.Error("error running progressbar", "error", rerr)
 	}
@@ -76,6 +77,7 @@ func (p pbar) View() string {
 func (p pbar) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
+		panic("foo")
 		return p, tea.Quit
 
 	case tea.WindowSizeMsg:
