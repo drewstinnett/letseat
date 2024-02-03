@@ -161,7 +161,8 @@ linters-settings:
           - "github.com/drewstinnett/letseat/pkg"
           - "github.com/drewstinnett/letseat/cmd/letseat/cmd"
           - "github.com/drewstinnett/go-output-format/v2/gout"
-
+          - "github.com/charmbracelet/bubbletea"
+          - "github.com/charmbracelet/bubbles/progress"
       tests:
         files:
           - "$test"

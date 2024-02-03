@@ -8,6 +8,9 @@ var (
 	// special    = lipgloss.AdaptiveColor{Light: "#43BF6D", Dark: "#73F59F"}
 	titleStyle = lipgloss.NewStyle().Bold(true).Foreground(highlight)
 	docStyle   = lipgloss.NewStyle().Padding(1, 2, 1, 2)
+	helpStyle  = lipgloss.NewStyle().Foreground(lipgloss.Color("#626262")).Render
+	padding    = 2
+	maxWidth   = 80
 
 	/*
 		infoStyle = lipgloss.NewStyle().

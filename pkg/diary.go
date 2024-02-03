@@ -5,25 +5,22 @@ package letseat
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log/slog"
-	"os"
 	"slices"
 	"sort"
 	"time"
 
 	"github.com/montanaflynn/stats"
 	bolt "go.etcd.io/bbolt"
-	"gopkg.in/yaml.v2"
 )
 
 // Diary is the thing holding all of your visits and info
 type Diary struct {
+	// Deprecated: Use db instead of unfiltered entries
 	unfilteredEntries Entries
 	entries           *Entries
 	filter            EntryFilter
-	fn                string
 	db                *bolt.DB
 }
 
@@ -44,6 +41,12 @@ func (d *Diary) Log(es ...Entry) error {
 				slog.Warn("error logging entry", "error", err)
 			}
 			*d.entries = append(*d.entries, e)
+		}
+		// Now save the person info
+		for _, person := range d.entries.PeopleEnhanced() {
+			if err := tx.Bucket([]byte(PeopleBucket)).Put([]byte(person.Name), []byte("true")); err != nil {
+				slog.Warn("error logging person", "error", err)
+			}
 		}
 		return nil
 	}); err != nil {
@@ -166,6 +169,7 @@ func initDB(db *bolt.DB) error {
 	return nil
 }
 
+/*
 // WriteEntries write the entries back to a yaml file
 func (d Diary) WriteEntries() error {
 	if d.fn == "" {
@@ -186,6 +190,7 @@ func (d Diary) WriteEntries() error {
 	}
 	return nil
 }
+*/
 
 // Entries is multiple DiaryEntry objects
 type Entries []Entry

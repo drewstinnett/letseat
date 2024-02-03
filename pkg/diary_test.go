@@ -206,3 +206,18 @@ func TestWithDB(t *testing.T) {
 	require.NotNil(t, got.db)
 	require.NotNil(t, New(WithDBFilename(path.Join(t.TempDir(), "test-fn.db"))))
 }
+
+func TestLogDB(t *testing.T) {
+	diary := New(WithDB(newTestDB(t)))
+	require.NotNil(t, diary)
+	require.NoError(t, diary.Log(
+		Entry{
+			Place:     "Mamacitas",
+			Date:      toPTR(time.Date(2024, time.January, 15, 0, 0, 0, 0, time.UTC)),
+			IsTakeout: true, Ratings: map[string]int{
+				"drew":  5,
+				"james": 3,
+			},
+		},
+	))
+}
