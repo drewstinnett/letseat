@@ -1,12 +1,24 @@
 package letseat
 
-import "sort"
+import (
+	"sort"
+)
 
 // Person represents a person who ate and rated something at a restaurant
 type Person struct {
 	Name            string
 	PlaceAvgRatings map[string]float64
 }
+
+/*
+func (p Person) mustMarshal() []byte {
+	b, err := json.Marshal(p)
+	if err != nil {
+		panic(err)
+	}
+	return b
+}
+*/
 
 // FavoriteN returns the persons N favorite restaurants
 func (p *Person) FavoriteN(n int) []string {

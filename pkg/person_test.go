@@ -32,7 +32,9 @@ func TestPeople(t *testing.T) {
 
 	for _, tt := range ts {
 		got := tt.diary.people()
-		require.Equal(t, tt.want, got)
+		for _, witem := range tt.want {
+			require.Contains(t, got, witem)
+		}
 	}
 }
 

@@ -4,23 +4,25 @@ Package letseat is the main thing that decides where to go for dindin
 package letseat
 
 import (
-	"errors"
-	"os"
-	"path"
+	"encoding/json"
+	"fmt"
+	"log/slog"
 	"slices"
 	"sort"
 	"time"
 
 	"github.com/montanaflynn/stats"
+	bolt "go.etcd.io/bbolt"
 	"gopkg.in/yaml.v2"
 )
 
 // Diary is the thing holding all of your visits and info
 type Diary struct {
+	// Deprecated: Use db instead of unfiltered entries
 	unfilteredEntries Entries
 	entries           *Entries
 	filter            EntryFilter
-	fn                string
+	db                *bolt.DB
 }
 
 // Entries returns all the entries matching the filter
@@ -28,10 +30,66 @@ func (d Diary) Entries() Entries {
 	return *d.entries
 }
 
+// Close closes the database
+func (d Diary) Close() error {
+	return d.db.Close()
+}
+
+func (d Diary) allEntries() (Entries, error) {
+	ret := Entries{}
+	if verr := d.db.View(func(tx *bolt.Tx) error {
+		// Assume bucket exists and has keys
+		c := tx.Bucket([]byte(EntriesBucket)).Cursor()
+
+		for k, v := c.First(); k != nil; k, v = c.Next() {
+			var e Entry
+			err := json.Unmarshal(v, &e)
+			if err != nil {
+				return err
+			}
+			ret = append(ret, e)
+			// fmt.Printf("key=%s, value=%s\n", k, v)
+		}
+		return nil
+	}); verr != nil {
+		return nil, verr
+	}
+	return ret, nil
+}
+
+// Export returns all entries in yaml form
+func (d Diary) Export() ([]byte, error) {
+	entries, err := d.allEntries()
+	if err != nil {
+		return nil, err
+	}
+	return yaml.Marshal(entries)
+}
+
 // Log logs a new entry to your diary
-func (d *Diary) Log(e *Entry) {
-	d.unfilteredEntries = append(d.unfilteredEntries, *e)
-	*d.entries = append(*d.entries, *e)
+func (d *Diary) Log(es ...Entry) error {
+	if d.entries == nil {
+		d.entries = &Entries{}
+	}
+	if err := d.db.Update(func(tx *bolt.Tx) error {
+		for _, e := range es {
+			e := e
+			if err := tx.Bucket([]byte(EntriesBucket)).Put([]byte(e.Key()), e.mustMarshal()); err != nil {
+				slog.Warn("error logging entry", "error", err)
+			}
+			*d.entries = append(*d.entries, e)
+		}
+		// Now save the person info
+		for _, person := range d.entries.PeopleEnhanced() {
+			if err := tx.Bucket([]byte(PeopleBucket)).Put([]byte(person.Name), []byte("true")); err != nil {
+				slog.Warn("error logging person", "error", err)
+			}
+		}
+		return nil
+	}); err != nil {
+		return err
+	}
+	return nil
 }
 
 // MostPopularPlace just returns the most popular place
@@ -51,9 +109,56 @@ func (d Diary) PlaceDetails() PlaceDetails {
 	return ret
 }
 
+// WithDB sets the bbolt database for a letseat client
+func WithDB(db *bolt.DB) func(*Diary) {
+	if err := initDB(db); err != nil {
+		panic(err)
+	}
+	var entries Entries
+	if err := db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(EntriesBucket))
+		c := b.Cursor()
+
+		for k, v := c.First(); k != nil; k, v = c.Next() {
+			var entry Entry
+			if err := json.Unmarshal(v, &entry); err != nil {
+				panic(err)
+			}
+			entries = append(entries, entry)
+		}
+		return nil
+	}); err != nil {
+		panic(err)
+	}
+	return func(d *Diary) {
+		d.db = db
+		d.unfilteredEntries = entries
+	}
+}
+
+// WithDBFilename uses a given file for the db
+func WithDBFilename(fn string) func(*Diary) {
+	db, err := bolt.Open(fn, 0o600, nil)
+	if err != nil {
+		panic(err)
+	}
+	return WithDB(db)
+}
+
 // WithEntries sets the diary entries on a new Diary object
 func WithEntries(e Entries) func(*Diary) {
 	return func(d *Diary) {
+		if d.db == nil {
+			panic("must set the db before loading any entries")
+		}
+		ents := make([]Entry, len(e))
+		for idx, ent := range e {
+			ent := ent
+			ents[idx] = ent
+		}
+		if err := d.Log(ents...); err != nil {
+			panic(err)
+		}
 		d.unfilteredEntries = e
 	}
 }
@@ -65,40 +170,43 @@ func WithFilter(f EntryFilter) func(*Diary) {
 	}
 }
 
-// WithEntriesFile adds the entries from a yaml file to a diary
-func WithEntriesFile(fn string) func(*Diary) {
-	if !checkFileExists(fn) {
-		err := os.WriteFile(fn, []byte("---\n"), 0o600)
-		if err != nil {
-			panic(err)
-		}
-	}
-	y, err := os.ReadFile(path.Clean(fn))
-	if err != nil {
-		panic(err)
-	}
-
-	var e Entries
-	err = yaml.Unmarshal(y, &e)
-	if err != nil {
-		panic(err)
-	}
-	return func(d *Diary) {
-		d.unfilteredEntries = e
-		d.fn = fn
-	}
-}
-
 // New returns a new Diary object using functional options
 func New(opts ...func(*Diary)) *Diary {
 	d := &Diary{}
 	for _, opt := range opts {
 		opt(d)
 	}
+
 	d.entries = toPTR(d.unfilteredEntries.filter(&d.filter))
 	return d
 }
 
+const (
+	// PeopleBucket is the name of the bucket that contains all the People entries
+	PeopleBucket = "people"
+	// EntriesBucket is the name of the bucket that contains all the Entries entries
+	EntriesBucket = "entries"
+	// PlacesBucket is the name of the bucket that contains all the Places entries
+	PlacesBucket = "places"
+)
+
+func initDB(db *bolt.DB) error {
+	buckets := []string{PeopleBucket, EntriesBucket, PlacesBucket}
+	for _, bucket := range buckets {
+		bucket := bucket
+		if err := db.Update(func(tx *bolt.Tx) error {
+			if _, err := tx.CreateBucketIfNotExists([]byte(bucket)); err != nil {
+				return err
+			}
+			return nil
+		}); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+/*
 // WriteEntries write the entries back to a yaml file
 func (d Diary) WriteEntries() error {
 	if d.fn == "" {
@@ -119,6 +227,7 @@ func (d Diary) WriteEntries() error {
 	}
 	return nil
 }
+*/
 
 // Entries is multiple DiaryEntry objects
 type Entries []Entry
@@ -130,6 +239,22 @@ type Entry struct {
 	Date      *time.Time     `yaml:"date"`
 	IsTakeout bool           `yaml:"takeout,omitempty"`
 	Ratings   map[string]int `yaml:"ratings,omitempty"`
+}
+
+// Key is the key path for the database for a given entry
+func (d Entry) Key() string {
+	if d.Date == nil {
+		d.Date = &time.Time{}
+	}
+	return fmt.Sprintf("/%v/%v", d.Date.Format(time.RFC3339), d.Place)
+}
+
+func (d Entry) mustMarshal() []byte {
+	got, err := json.Marshal(d)
+	if err != nil {
+		panic(err)
+	}
+	return got
 }
 
 func (d *Entry) ratingValuesAsFloat64() []float64 {
@@ -172,13 +297,15 @@ func (e *Entries) people() []string {
 			}
 		}
 	}
-	sort.Strings(people)
 
 	return people
 }
 
 // PeopleEnhanced returns all the details on people
 func (e *Entries) PeopleEnhanced() []Person {
+	if len(e.people()) == 0 {
+		return []Person{}
+	}
 	people := make([]Person, len(e.people()))
 	for idx, name := range e.people() {
 		p := Person{

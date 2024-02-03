@@ -1,0 +1,17 @@
+# this is a thing
+---
+- place: Biggy Wings
+  date: 2023-12-21
+  takeout: true
+  ratings:
+    andrei: 3
+- place: McDonuoughs Pub
+  date: 2023-12-16
+  ratings:
+    andrei: 4
+- place: Franks Place
+  date: 2023-12-14
+  takeout: true
+  ratings:
+    andrei: 4
+    jeymes: 3

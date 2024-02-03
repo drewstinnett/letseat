@@ -155,18 +155,21 @@ linters-settings:
           - "github.com/montanaflynn/stats"
           - "github.com/mitchellh/go-homedir"
           - "github.com/drewstinnett/gout/v2"
+          - "github.com/charmbracelet/log"
           - "github.com/charmbracelet/glamour"
           - "github.com/charmbracelet/lipgloss"
           - "github.com/drewstinnett/letseat/pkg"
           - "github.com/drewstinnett/letseat/cmd/letseat/cmd"
           - "github.com/drewstinnett/go-output-format/v2/gout"
-
+          - "github.com/charmbracelet/bubbletea"
+          - "github.com/charmbracelet/bubbles/progress"
       tests:
         files:
           - "$test"
         allow:
           - '$gostd'
           - "github.com/stretchr/testify/require"
+          - "github.com/stretchr/testify/assert"
   # depguard:
   #   list-type: blacklist
   #   include-go-root: false

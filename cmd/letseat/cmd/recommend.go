@@ -27,7 +27,7 @@ func newRecommendCommand() *cobra.Command {
 func runRecommend(cmd *cobra.Command, args []string) error {
 	diary := letseat.New(
 		letseat.WithFilter(*mustNewEntryFilterWithCmd(cmd)),
-		letseat.WithEntriesFile(mustGetCmd[string](*cmd, "diary")),
+		letseat.WithDBFilename(mustGetCmd[string](*cmd, "data")),
 	)
 	topN := mustGetCmd[int](*cmd, "top")
 	placesDetails := diary.PlaceDetails()

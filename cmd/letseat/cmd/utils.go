@@ -3,8 +3,11 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"io"
+	"log/slog"
 	"os"
 	"reflect"
+	"strconv"
 	"time"
 
 	letseat "github.com/drewstinnett/letseat/pkg"
@@ -80,6 +83,11 @@ func validateDate(s string) error {
 	return nil
 }
 
+func validateNumber(s string) error {
+	_, err := strconv.Atoi(s)
+	return err
+}
+
 func validatePlace(s string) error {
 	if s == "" {
 		return errors.New("place cannot be empty")
@@ -97,4 +105,10 @@ func exists(path string) bool {
 		return false
 	}
 	return false
+}
+
+func dclose(c io.Closer) {
+	if err := c.Close(); err != nil {
+		slog.Error("error closing file")
+	}
 }

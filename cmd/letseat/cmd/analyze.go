@@ -35,13 +35,13 @@ func bindFilter(cmd *cobra.Command) {
 func runAnalyze(cmd *cobra.Command, args []string) error {
 	diary := letseat.New(
 		letseat.WithFilter(*mustNewEntryFilterWithCmd(cmd)),
-		letseat.WithEntriesFile(mustGetCmd[string](*cmd, "diary")),
+		letseat.WithDBFilename(mustGetCmd[string](*cmd, "data")),
 	)
 
-	// Find best rated meals
+	// Find best rated mealsxx
 	placesDetails := diary.PlaceDetails()
 	if len(placesDetails) == 0 {
-		return fmt.Errorf("No entries found! Try adding some with %v log", os.Args[0])
+		return fmt.Errorf("no entries found! Try adding some with %v log", os.Args[0])
 	}
 
 	// Print highest rated
