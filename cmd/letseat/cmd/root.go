@@ -56,6 +56,7 @@ func newRootCmd() *cobra.Command {
 		newConfigCmd(),
 		newImportCmd(),
 		newExportCmd(),
+		newEditCmd(),
 	)
 
 	return cmd

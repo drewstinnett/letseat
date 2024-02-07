@@ -220,4 +220,34 @@ func TestLogDB(t *testing.T) {
 			},
 		},
 	))
+
+	export, err := diary.Export()
+	require.NoError(t, err)
+	require.Equal(
+		t,
+		"- place: Mamacitas\n  date: 2024-01-15T00:00:00Z\n  takeout: true\n  ratings:\n    drew: 5\n    james: 3\n",
+		string(export),
+	)
+}
+
+func TestGet(t *testing.T) {
+	diary := New(WithDB(newTestDB(t)))
+	require.NotNil(t, diary)
+	e := Entry{
+		Place:     "Mamacitas",
+		Date:      toPTR(time.Date(2024, time.January, 15, 0, 0, 0, 0, time.UTC)),
+		IsTakeout: true, Ratings: map[string]int{
+			"drew":  5,
+			"james": 3,
+		},
+	}
+	require.NoError(t, diary.Log(e))
+	got, err := diary.Get(e.Key())
+	require.NoError(t, err)
+	require.Equal(t, &e, got)
+
+	// Check for bad keys
+	got, err = diary.Get("never-exists")
+	require.EqualError(t, err, "record not found: never-exists")
+	require.Nil(t, got)
 }

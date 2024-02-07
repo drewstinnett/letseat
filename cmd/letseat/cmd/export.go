@@ -20,11 +20,11 @@ func runExport(cmd *cobra.Command, args []string) error {
 	diary := letseat.New(
 		letseat.WithDBFilename(mustGetCmd[string](*cmd, "data")),
 	)
+	defer dclose(diary)
 	out, err := diary.Export()
 	if err != nil {
 		return err
 	}
-	defer dclose(diary)
 	fmt.Fprint(cmd.OutOrStdout(), string(out))
 	return nil
 }
