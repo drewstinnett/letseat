@@ -35,6 +35,24 @@ func (d Diary) Close() error {
 	return d.db.Close()
 }
 
+// Get returns an entry by it's key
+func (d Diary) Get(k string) (*Entry, error) {
+	var e Entry
+	if verr := d.db.View(func(tx *bolt.Tx) error {
+		v := tx.Bucket([]byte(EntriesBucket)).Get([]byte(k))
+		if string(v) == "" {
+			return fmt.Errorf("record not found: %v", k)
+		}
+		if err := json.Unmarshal(v, &e); err != nil {
+			return err
+		}
+		return nil
+	}); verr != nil {
+		return nil, verr
+	}
+	return &e, nil
+}
+
 func (d Diary) allEntries() (Entries, error) {
 	ret := Entries{}
 	if verr := d.db.View(func(tx *bolt.Tx) error {

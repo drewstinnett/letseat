@@ -170,6 +170,7 @@ linters-settings:
           - '$gostd'
           - "github.com/stretchr/testify/require"
           - "github.com/stretchr/testify/assert"
+          - "github.com/charmbracelet/huh"
   # depguard:
   #   list-type: blacklist
   #   include-go-root: false
